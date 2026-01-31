@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - Ferretería San José</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            height: 100vh;
+            overflow: hidden;
+            font-size: 12px;
+        }
+
+        /* Contenedor principal ultra compacto */
+        .main-container {
+            margin-top: 50px;
+            padding: 0.5rem;
+            height: calc(100vh - 50px);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        /* Encabezado de la página */
+        .page-header {
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            color: #2c3e50;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        /* Controles de búsqueda y filtros */
+        .controls-section {
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            align-items: center;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-input-group {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .search-input::placeholder {
+            color: #95a5a6;
+            font-size: 0.75rem;
+        }
+
+        .search-input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 1px rgba(52, 152, 219, 0.1);
+            outline: none;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 2px;
+            padding: 0.25rem 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+
+        .search-btn:hover {
+            background: #2980b9;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.75rem;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            min-width: 120px;
+        }
+
+        /* Área principal de productos */
+        .products-area {
+            flex: 1;
+            display: flex;
+            gap: 0.6rem;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* Tabla de productos */
+        .products-section {
+            flex: 3;
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .item-count {
+            background: #3498db;
+            color: white;
+            padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Tabla de productos */
+        .table-container {
+            flex: 1;
+            overflow: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .products-table thead {
+            background: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .products-table th {
+            padding: 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #e0e0e0;
+            white-space: nowrap;
+        }
+
+        .products-table td {
+            padding: 0.4rem 0.5rem;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .products-table tbody tr:hover {
+            background-color: #f8fafd;
+        }
+
+        /* Columnas específicas */
+        .col-code {
+            width: 100px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .col-name {
+            min-width: 180px;
+        }
+
+        .col-brand {
+            width: 100px;
+        }
+
+        .col-category {
+            width: 120px;
+        }
+
+        .col-unit {
+            width: 80px;
+            text-align: center;
+        }
+
+        .col-price {
+            width: 90px;
+            text-align: right;
+        }
+
+        .col-cost {
+            width: 90px;
+            text-align: right;
+            color: #7f8c8d;
+        }
+
+        .col-stock {
+            width: 70px;
+            text-align: center;
+        }
+
+        .col-margin {
+            width: 80px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .col-actions {
+            width: 80px;
+            text-align: center;
+        }
+
+        /* Indicadores de margen */
+        .margin-badge {
+            padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .margin-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .margin-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .margin-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Botones de acción */
+        .action-btn {
+            padding: 0.2rem 0.4rem;
+            border: none;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .action-btn.edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-btn.edit-btn:hover {
+            background: #2980b9;
+        }
+
+        .action-btn.delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .action-btn.delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .action-btn.view-btn {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .action-btn.view-btn:hover {
+            background: #27ae60;
+        }
+
+        /* Panel de resumen */
+        .summary-section {
+            flex: 1;
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            min-width: 320px;
+            max-width: 380px;
+        }
+
+        .summary-header {
+            margin-bottom: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        .summary-title {
+            color: #2c3e50;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        /* Estadísticas de productos */
+        .stats-container {
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.4rem;
+            font-size: 0.75rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .stat-value.total {
+            color: #2ecc71;
+            font-size: 0.85rem;
+        }
+
+        .stat-value.highlight {
+            color: #3498db;
+        }
+
+        /* Acciones rápidas */
+        .quick-actions {
+            margin-bottom: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .actions-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .action-button {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        .action-button.primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .action-button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .action-button.success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .action-button.success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(46, 204, 113, 0.1);
+        }
+
+        .action-button.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .action-button.warning:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(243, 156, 18, 0.1);
+        }
+
+        .action-button.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .action-button.danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(231, 76, 60, 0.1);
+        }
+
+        /* Panel de detalles del producto */
+        .product-details {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 0.8rem;
+            border: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+
+        .details-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.6rem;
+            font-size: 0.8rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .product-info {
+            font-size: 0.75rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #7f8c8d;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* Notificaciones */
+        #notification {
+            display: none;
+            position: fixed;
+            top: 55px;
+            right: 8px;
+            background: #2ecc71;
+            color: white;
+            padding: 0.4rem 0.6rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            z-index: 1001;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Tags para marcas */
+        .brand-tag {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-right: 0.2rem;
+        }
+
+        /* Scrollbar personalizado */
+        .table-container::-webkit-scrollbar,
+        .product-details::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-track,
+        .product-details::-webkit-scrollbar-track {
+            background: #f8f9fa;
+            border-radius: 2px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb,
+        .product-details::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 2px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .products-area {
+                flex-direction: column;
+            }
+            
+            .summary-section {
+                min-width: auto;
+                max-width: none;
+                max-height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin-top: 45px;
+                padding: 0.4rem;
+                height: calc(100vh - 45px);
+                gap: 0.4rem;
+            }
+            
+            .controls-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-container {
+                min-width: 100%;
+            }
+            
+            .filter-container {
+                justify-content: center;
+            }
+            
+            .products-section, .summary-section {
+                padding: 0.5rem;
+            }
+            
+            .products-table {
+                font-size: 0.7rem;
+            }
+            
+            .col-code, .col-brand, .col-unit, .col-stock {
+                display: none;
+            }
+        }
+
+        /* Animaciones */
+        @keyframes modalAppear {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cargar encabezado -->
+    <div id="header-container"></div>
+
+    <!-- Notificaciones -->
+    <div id="notification"></div>
+
+    <!-- Contenedor principal -->
+    <div class="main-container">
+        <!-- Encabezado de página -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-boxes text-primary me-2"></i>
+                GESTIÓN DE PRODUCTOS
+            </h1>
+            <div class="header-actions">
+                <button class="action-button warning" id="importBtn">
+                    <i class="fas fa-file-import"></i>
+                    Importar Excel
+                </button>
+                <button class="action-button primary" id="exportBtn">
+                    <i class="fas fa-file-export"></i>
+                    Exportar
+                </button>
+                <button class="action-button success" id="addProductBtn">
+                    <i class="fas fa-plus"></i>
+                    Nuevo Producto
+                </button>
+            </div>
+        </div>
+
+        <!-- Controles de búsqueda y filtros -->
+        <div class="controls-section">
+            <div class="search-container">
+                <div class="search-input-group">
+                    <input type="text" 
+                           id="searchProducts" 
+                           class="search-input" 
+                           placeholder="Buscar producto por código, nombre, marca o categoría..."
+                           autofocus>
+                    <button id="searchProductsBtn" class="search-btn">
+                        <i class="fas fa-search me-1"></i> BUSCAR
+                    </button>
+                </div>
+            </div>
+            
+            <div class="filter-container">
+                <select id="categoryFilter" class="filter-select">
+                    <option value="">Todas las categorías</option>
+                    <option value="Herramientas">Herramientas</option>
+                    <option value="Construcción">Construcción</option>
+                    <option value="Pintura">Pintura</option>
+                    <option value="Ferretería">Ferretería</option>
+                    <option value="Electricidad">Electricidad</option>
+                    <option value="Fontanería">Fontanería</option>
+                </select>
+                
+                <select id="brandFilter" class="filter-select">
+                    <option value="">Todas las marcas</option>
+                    <option value="Truper">Truper</option>
+                    <option value="Hermex">Hermex</option>
+                    <option value="DeWalt">DeWalt</option>
+                    <option value="Stanley">Stanley</option>
+                    <option value="Makita">Makita</option>
+                    <option value="Bosch">Bosch</option>
+                </select>
+                
+                <select id="unitFilter" class="filter-select">
+                    <option value="">Todas las unidades</option>
+                    <option value="Pieza">Pieza</option>
+                    <option value="Metro">Metro</option>
+                    <option value="Kilo">Kilo</option>
+                    <option value="Litro">Litro</option>
+                    <option value="Caja">Caja</option>
+                    <option value="Paquete">Paquete</option>
+                </select>
+                
+                <button id="clearFiltersBtn" class="action-button danger" style="padding: 0.4rem 0.6rem;">
+                    <i class="fas fa-times"></i>
+                    Limpiar
+                </button>
+            </div>
+        </div>
+
+        <!-- Área principal de productos -->
+        <div class="products-area">
+            <!-- Tabla de productos -->
+            <div class="products-section">
+                <div class="products-header">
+                    <h2 class="section-title">CATÁLOGO DE PRODUCTOS</h2>
+                    <div class="item-count" id="itemCount">0 productos</div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th class="col-code">CÓDIGO</th>
+                                <th class="col-name">PRODUCTO</th>
+                                <th class="col-brand">MARCA</th>
+                                <th class="col-category">CATEGORÍA</th>
+                                <th class="col-unit">UNIDAD</th>
+                                <th class="col-price">PRECIO VENTA</th>
+                                <th class="col-cost">COSTO</th>
+                                <th class="col-stock">STOCK</th>
+                                <th class="col-margin">MARGEN</th>
+                                <th class="col-actions">ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <!-- Los productos se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Panel de resumen y detalles -->
+            <div class="summary-section">
+                <div class="summary-header">
+                    <h2 class="summary-title">INFORMACIÓN DEL PRODUCTO</h2>
+                </div>
+                
+                <!-- Estadísticas -->
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span>Productos totales:</span>
+                        <span class="stat-value" id="totalProducts">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Marcas distintas:</span>
+                        <span class="stat-value" id="totalBrands">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Categorías:</span>
+                        <span class="stat-value" id="totalCategories">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Valor total inventario:</span>
+                        <span class="stat-value total" id="totalInventoryValue">$0.00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Margen promedio:</span>
+                        <span class="stat-value highlight" id="averageMargin">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Productos sin stock:</span>
+                        <span class="stat-value" id="outOfStock">0</span>
+                    </div>
+                </div>
+                
+                <!-- Acciones rápidas -->
+                <div class="quick-actions">
+                    <h5 class="actions-title">ACCIONES RÁPIDAS</h5>
+                    <div class="action-buttons">
+                        <button class="action-button primary" id="manageCategoriesBtn">
+                            <i class="fas fa-tags"></i>
+                            Gestionar Categorías
+                        </button>
+                        <button class="action-button success" id="addBrandBtn">
+                            <i class="fas fa-trademark"></i>
+                            Agregar Marca
+                        </button>
+                        <button class="action-button warning" id="priceUpdateBtn">
+                            <i class="fas fa-chart-line"></i>
+                            Actualizar Precios
+                        </button>
+                        <button class="action-button" id="viewAlertsBtn" style="background: #9b59b6; color: white;">
+                            <i class="fas fa-bell"></i>
+                            Alertas Stock
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Detalles del producto seleccionado -->
+                <div class="product-details">
+                    <h5 class="details-title">DETALLES COMPLETOS</h5>
+                    <div class="product-info" id="productDetails">
+                        <p class="text-muted" style="font-size: 0.7rem; text-align: center; padding: 1rem;">
+                            <i class="fas fa-mouse-pointer fa-lg mb-2"></i><br>
+                            Selecciona un producto para ver sus detalles
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nuevo/editar producto -->
+    <div id="productModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 2000;">
+        <div class="modal-content" style="background: white; border-radius: 6px; padding: 1rem; width: 90%; max-width: 500px; animation: modalAppear 0.15s ease;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f1f1;">
+                <h2 class="modal-title" style="font-size: 0.9rem; color: #2c3e50; display: flex; align-items: center; gap: 0.4rem;">
+                    <i class="fas fa-box"></i>
+                    <span id="modalProductTitle">Nuevo Producto</span>
+                </h2>
+                <button class="close-modal" id="closeProductModal" style="background: none; border: none; font-size: 1rem; color: #7f8c8d; cursor: pointer; padding: 0.25rem; border-radius: 50%;">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <div class="col" style="flex: 1;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Código *</label>
+                                <input type="text" 
+                                       id="productCode" 
+                                       class="form-control" 
+                                       placeholder="Ej: MART001-TRU"
+                                       style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col" style="flex: 1;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Marca *</label>
+                                <select id="productBrand" 
+                                        class="form-control" 
+                                        style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                                        required>
+                                    <option value="">Seleccionar marca</option>
+                                    <option value="Truper">Truper</option>
+                                    <option value="Hermex">Hermex</option>
+                                    <option value="DeWalt">DeWalt</option>
+                                    <option value="Stanley">Stanley</option>
+                                    <option value="Makita">Makita</option>
+                                    <option value="Bosch">Bosch</option>
+                                    <option value="Sin marca">Sin marca</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Nombre del producto *</label>
+                        <input type="text" 
+                               id="productName" 
+                               class="form-control" 
+                               placeholder="Ej: Martillo 16oz"
+                               style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                               required>
+                    </div>
+                    
+                    <div class="row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <div class="col" style="flex: 1;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Categoría *</label>
+                                <select id="productCategory" 
+                                        class="form-control" 
+                                        style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                                        required>
+                                    <option value="Herramientas">Herramientas</option>
+                                    <option value="Construcción">Construcción</option>
+                                    <option value="Pintura">Pintura</option>
+                                    <option value="Ferretería">Ferretería</option>
+                                    <option value="Electricidad">Electricidad</option>
+                                    <option value="Fontanería">Fontanería</option>
+                                    <option value="Otros">Otros</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col" style="flex: 1;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Unidad de medida *</label>
+                                <select id="productUnit" 
+                                        class="form-control" 
+                                        style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                                        required>
+                                    <option value="Pieza">Pieza</option>
+                                    <option value="Metro">Metro</option>
+                                    <option value="Kilo">Kilo</option>
+                                    <option value="Litro">Litro</option>
+                                    <option value="Caja">Caja</option>
+                                    <option value="Paquete">Paquete</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <div class="col" style="flex: 1;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Stock inicial</label>
+                                <input type="number" 
+                                       id="productStock" 
+                                       class="form-control" 
+                                       placeholder="0"
+                                       min="0"
+                                       style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                                       value="0">
+                            </div>
+                        </div>
+                        <div class="col" style="flex: 1;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Costo ($)</label>
+                                <input type="number" 
+                                       id="productCost" 
+                                       class="form-control" 
+                                       placeholder="0.00"
+                                       step="0.01"
+                                       min="0"
+                                       style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                                       value="0">
+                            </div>
+                        </div>
+                        <div class="col" style="flex: 1;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Precio venta ($) *</label>
+                                <input type="number" 
+                                       id="productPrice" 
+                                       class="form-control" 
+                                       placeholder="0.00"
+                                       step="0.01"
+                                       min="0"
+                                       style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Descripción (opcional)</label>
+                        <textarea id="productDescription" 
+                                  class="form-control" 
+                                  placeholder="Descripción detallada del producto..."
+                                  rows="2"
+                                  style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem; resize: vertical;"></textarea>
+                    </div>
+                    
+                    <div class="modal-actions" style="display: flex; gap: 0.4rem; margin-top: 1rem;">
+                        <button type="button" class="modal-btn modal-btn-secondary" id="cancelProductBtn" style="flex: 1; padding: 0.4rem; background: #f8f9fa; color: #2c3e50; border: none; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" class="modal-btn modal-btn-primary" id="saveProductBtn" style="flex: 1; padding: 0.4rem; background: #3498db; color: white; border: none; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                            <i class="fas fa-save"></i> Guardar Producto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para importar Excel -->
+    <div id="importModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 2000;">
+        <div class="modal-content" style="background: white; border-radius: 6px; padding: 1rem; width: 90%; max-width: 400px; animation: modalAppear 0.15s ease;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f1f1;">
+                <h2 class="modal-title" style="font-size: 0.9rem; color: #2c3e50; display: flex; align-items: center; gap: 0.4rem;">
+                    <i class="fas fa-file-excel"></i>
+                    Importar Productos desde Excel
+                </h2>
+                <button class="close-modal" id="closeImportModal" style="background: none; border: none; font-size: 1rem; color: #7f8c8d; cursor: pointer; padding: 0.25rem; border-radius: 50%;">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="import-instructions" style="margin-bottom: 1rem; font-size: 0.75rem; color: #7f8c8d;">
+                    <p><strong>Formato requerido:</strong> El archivo Excel debe tener las siguientes columnas:</p>
+                    <ul style="padding-left: 1rem; margin: 0.5rem 0;">
+                        <li>Categoría</li>
+                        <li>Producto</li>
+                        <li>Marca</li>
+                        <li>Código</li>
+                        <li>Unidad de medida</li>
+                        <li>Precio</li>
+                        <li>Costo</li>
+                        <li>Stock</li>
+                    </ul>
+                </div>
+                
+                <div class="form-group mb-2">
+                    <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Seleccionar archivo Excel (.xlsx)</label>
+                    <input type="file" 
+                           id="excelFile" 
+                           class="form-control" 
+                           accept=".xlsx,.xls"
+                           style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;">
+                </div>
+                
+                <div class="progress" id="importProgress" style="display: none; margin: 1rem 0;">
+                    <div class="progress-bar" role="progressbar" style="width: 0%; height: 0.5rem; background-color: #3498db; border-radius: 2px;"></div>
+                </div>
+                
+                <div class="modal-actions" style="display: flex; gap: 0.4rem; margin-top: 1rem;">
+                    <button type="button" class="modal-btn modal-btn-secondary" id="cancelImportBtn" style="flex: 1; padding: 0.4rem; background: #f8f9fa; color: #2c3e50; border: none; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="modal-btn modal-btn-success" id="startImportBtn" style="flex: 1; padding: 0.4rem; background: #2ecc71; color: white; border: none; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                        <i class="fas fa-upload"></i> Importar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // ========== CONFIGURACIÓN ==========
+        let products = [];
+        let editingProductId = null;
+        let selectedProduct = null;
+
+        // Productos iniciales de ejemplo (según requerimientos)
+        const initialProducts = [
+            { id: 1, code: 'MART001-TRU', name: 'Martillo 16oz', brand: 'Truper', category: 'Herramientas', unit: 'Pieza', price: 289.50, cost: 210.00, stock: 45, description: 'Martillo de 16 onzas cabeza acero' },
+            { id: 2, code: 'MART002-HER', name: 'Martillo de Uña', brand: 'Hermex', category: 'Herramientas', unit: 'Pieza', price: 185.00, cost: 135.00, stock: 32, description: 'Martillo de uña 14 pulgadas' },
+            { id: 3, code: 'DEST001-TRU', name: 'Desarmador Plano 1/4"', brand: 'Truper', category: 'Herramientas', unit: 'Pieza', price: 35.80, cost: 22.50, stock: 120, description: 'Desarmador plano punta imantada' },
+            { id: 4, code: 'DEST002-DEW', name: 'Desarmador Phillips #2', brand: 'DeWalt', category: 'Herramientas', unit: 'Pieza', price: 42.50, cost: 28.00, stock: 98, description: 'Desarmador phillips profesional' },
+            { id: 5, code: 'CEME001-STD', name: 'Cemento Gris 50kg', brand: 'Sin marca', category: 'Construcción', unit: 'Saco', price: 285.00, cost: 210.00, stock: 25, description: 'Cemento gris para construcción' },
+            { id: 6, code: 'CEME002-STD', name: 'Cemento Blanco 25kg', brand: 'Sin marca', category: 'Construcción', unit: 'Saco', price: 320.00, cost: 240.00, stock: 15, description: 'Cemento blanco para acabados' },
+            { id: 7, code: 'PINT001-COV', name: 'Pintura Blanca 4L', brand: 'Coventry', category: 'Pintura', unit: 'Litro', price: 325.00, cost: 250.00, stock: 38, description: 'Pintura vinílica color blanco' },
+            { id: 8, code: 'PINT002-COV', name: 'Pintura Roja 1L', brand: 'Coventry', category: 'Pintura', unit: 'Litro', price: 95.00, cost: 65.00, stock: 56, description: 'Pintura esmalte color rojo' },
+            { id: 9, code: 'CLAV001-STD', name: 'Clavos 2" x 1kg', brand: 'Sin marca', category: 'Ferretería', unit: 'Kilo', price: 28.50, cost: 18.00, stock: 85, description: 'Clavos de acero 2 pulgadas' },
+            { id: 10, code: 'CLAV002-STD', name: 'Clavos 3" x 1kg', brand: 'Sin marca', category: 'Ferretería', unit: 'Kilo', price: 32.00, cost: 20.00, stock: 72, description: 'Clavos de acero 3 pulgadas' },
+            { id: 11, code: 'CABL001-BOS', name: 'Cable Cal.12 10m', brand: 'Bosch', category: 'Electricidad', unit: 'Metro', price: 152.00, cost: 110.00, stock: 42, description: 'Cable eléctrico calibre 12' },
+            { id: 12, code: 'TUBO001-DUR', name: 'Tubo PVC 1/2" x 3m', brand: 'Durman', category: 'Fontanería', unit: 'Metro', price: 85.00, cost: 55.00, stock: 63, description: 'Tubo PVC para fontanería' },
+            { id: 13, code: 'SIER001-STA', name: 'Sierra de Arco', brand: 'Stanley', category: 'Herramientas', unit: 'Pieza', price: 420.00, cost: 310.00, stock: 8, description: 'Sierra de arco ajustable' },
+            { id: 14, code: 'FOCO001-PHI', name: 'Foco LED 12W', brand: 'Philips', category: 'Electricidad', unit: 'Pieza', price: 35.00, cost: 22.00, stock: 95, description: 'Foco LED equivalente a 100W' },
+            { id: 15, code: 'CINT001-3M', name: 'Cinta Aislante', brand: '3M', category: 'Electricidad', unit: 'Pieza', price: 22.50, cost: 12.00, stock: 110, description: 'Cinta aislante color negro' },
+            { id: 16, code: 'GUAN001-TRU', name: 'Guantes de Cuero', brand: 'Truper', category: 'Herramientas', unit: 'Par', price: 125.00, cost: 85.00, stock: 28, description: 'Guantes de cuero para trabajo' },
+            { id: 17, code: 'BROC001-PUR', name: 'Brocha 4"', brand: 'Purdy', category: 'Pintura', unit: 'Pieza', price: 68.00, cost: 45.00, stock: 51, description: 'Brocha profesional para pintura' },
+            { id: 18, code: 'TALA001-MAK', name: 'Taladro Percutor', brand: 'Makita', category: 'Herramientas', unit: 'Pieza', price: 850.00, cost: 650.00, stock: 12, description: 'Taladro percutor 1/2" 600W' },
+            { id: 19, code: 'LIJA001-3M', name: 'Lija para Madera', brand: '3M', category: 'Herramientas', unit: 'Paquete', price: 15.00, cost: 8.50, stock: 0, description: 'Lija grano 120 para madera' },
+            { id: 20, code: 'PINC001-KLI', name: 'Pinzas de Electricista', brand: 'Klein', category: 'Herramientas', unit: 'Pieza', price: 75.00, cost: 48.00, stock: 5, description: 'Pinzas para trabajo eléctrico' }
+        ];
+
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar encabezado
+            loadHeader();
+            
+            // Cargar productos desde localStorage o usar los iniciales
+            loadProducts();
+            
+            // Configurar eventos
+            setupEventListeners();
+            
+            // Mostrar productos
+            updateProductsUI();
+            
+            // Poner foco en búsqueda
+            document.getElementById('searchProducts').focus();
+        });
+
+        // ========== CARGAR ENCABEZADO ==========
+        function loadHeader() {
+            fetch('encabezado.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                    
+                    // Marcar vista activa en el menú
+                    setTimeout(() => {
+                        // Buscar y marcar como activo el item de Productos
+                        document.querySelectorAll('.dropdown-item').forEach(item => {
+                            if (item.textContent.includes('Productos')) {
+                                item.classList.add('active');
+                            }
+                        });
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error cargando el encabezado:', error);
+                    // Cargar encabezado simple si falla
+                    document.getElementById('header-container').innerHTML = `
+                        <header class="main-header" style="background: white; padding: 0.25rem 0.5rem; height: 50px;">
+                            <div class="logo-container">
+                                <div class="logo-icon"><i class="fas fa-tools"></i></div>
+                                <div>
+                                    <div class="logo-text">Ferretería San José</div>
+                                    <small class="text-muted">GESTIÓN DE PRODUCTOS</small>
+                                </div>
+                            </div>
+                            <button onclick="window.location.href='inventario.html'" class="btn btn-sm btn-outline-primary me-2">
+                                <i class="fas fa-clipboard-list"></i> Inventario
+                            </button>
+                        </header>
+                    `;
+                });
+        }
+
+        // ========== CARGAR PRODUCTOS ==========
+        function loadProducts() {
+            const savedProducts = localStorage.getItem('ferreteriaProducts');
+            if (savedProducts) {
+                products = JSON.parse(savedProducts);
+            } else {
+                // Usar productos iniciales
+                products = [...initialProducts];
+                saveProducts();
+            }
+        }
+
+        // ========== GUARDAR PRODUCTOS ==========
+        function saveProducts() {
+            localStorage.setItem('ferreteriaProducts', JSON.stringify(products));
+        }
+
+        // ========== CONFIGURAR EVENTOS ==========
+        function setupEventListeners() {
+            // Búsqueda
+            document.getElementById('searchProducts').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchProducts(this.value.trim());
+                }
+            });
+            
+            document.getElementById('searchProductsBtn').addEventListener('click', function() {
+                const searchTerm = document.getElementById('searchProducts').value.trim();
+                searchProducts(searchTerm);
+            });
+            
+            // Filtros
+            document.getElementById('categoryFilter').addEventListener('change', updateProductsUI);
+            document.getElementById('brandFilter').addEventListener('change', updateProductsUI);
+            document.getElementById('unitFilter').addEventListener('change', updateProductsUI);
+            document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
+            
+            // Botones de acción
+            document.getElementById('addProductBtn').addEventListener('click', openProductModal);
+            document.getElementById('importBtn').addEventListener('click', openImportModal);
+            document.getElementById('exportBtn').addEventListener('click', exportProducts);
+            document.getElementById('manageCategoriesBtn').addEventListener('click', manageCategories);
+            document.getElementById('addBrandBtn').addEventListener('click', addBrand);
+            document.getElementById('priceUpdateBtn').addEventListener('click', updatePrices);
+            document.getElementById('viewAlertsBtn').addEventListener('click', viewStockAlerts);
+            
+            // Modal de producto
+            document.getElementById('closeProductModal').addEventListener('click', closeProductModal);
+            document.getElementById('cancelProductBtn').addEventListener('click', closeProductModal);
+            document.getElementById('productForm').addEventListener('submit', saveProduct);
+            
+            // Modal de importación
+            document.getElementById('closeImportModal').addEventListener('click', closeImportModal);
+            document.getElementById('cancelImportBtn').addEventListener('click', closeImportModal);
+            document.getElementById('startImportBtn').addEventListener('click', importExcel);
+        }
+
+        // ========== BUSCAR PRODUCTOS ==========
+        function searchProducts(searchTerm) {
+            if (!searchTerm) {
+                updateProductsUI();
+                return;
+            }
+            
+            const searchLower = searchTerm.toLowerCase();
+            const filtered = products.filter(product => 
+                product.code.toLowerCase().includes(searchLower) ||
+                product.name.toLowerCase().includes(searchLower) ||
+                product.brand.toLowerCase().includes(searchLower) ||
+                product.category.toLowerCase().includes(searchLower)
+            );
+            
+            displayProducts(filtered);
+            
+            // Mostrar mensaje si no hay resultados
+            if (filtered.length === 0) {
+                document.getElementById('productsTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+                            <i class="fas fa-search fa-lg mb-2"></i><br>
+                            No se encontraron productos para "${searchTerm}"
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // ========== MOSTRAR PRODUCTOS ==========
+        function displayProducts(productsList) {
+            const tbody = document.getElementById('productsTableBody');
+            tbody.innerHTML = '';
+            
+            productsList.forEach(product => {
+                const margin = calculateMargin(product.price, product.cost);
+                const marginClass = getMarginClass(margin);
+                const marginText = getMarginText(margin);
+                const totalValue = (product.stock * product.cost).toFixed(2);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="col-code">${product.code}</td>
+                    <td class="col-name">${product.name}</td>
+                    <td class="col-brand"><span class="brand-tag">${product.brand}</span></td>
+                    <td class="col-category">${product.category}</td>
+                    <td class="col-unit">${product.unit}</td>
+                    <td class="col-price">$${product.price.toFixed(2)}</td>
+                    <td class="col-cost">$${product.cost.toFixed(2)}</td>
+                    <td class="col-stock">${product.stock}</td>
+                    <td class="col-margin">
+                        <span class="margin-badge ${marginClass}">${margin}%</span>
+                    </td>
+                    <td class="col-actions">
+                        <button class="action-btn view-btn" data-id="${product.id}" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn edit-btn" data-id="${product.id}" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Agregar eventos a los botones
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const productId = parseInt(this.dataset.id);
+                    showProductDetails(productId);
+                });
+            });
+            
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const productId = parseInt(this.dataset.id);
+                    editProduct(productId);
+                });
+            });
+            
+            // Agregar evento de clic a las filas para mostrar detalles
+            document.querySelectorAll('#productsTableBody tr').forEach(row => {
+                row.addEventListener('click', function() {
+                    const productId = parseInt(this.querySelector('.view-btn').dataset.id);
+                    showProductDetails(productId);
+                });
+            });
+        }
+
+        // ========== ACTUALIZAR INTERFAZ DE PRODUCTOS ==========
+        function updateProductsUI() {
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const brandFilter = document.getElementById('brandFilter').value;
+            const unitFilter = document.getElementById('unitFilter').value;
+            
+            let filteredProducts = [...products];
+            
+            // Filtrar por categoría
+            if (categoryFilter) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.category === categoryFilter
+                );
+            }
+            
+            // Filtrar por marca
+            if (brandFilter) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.brand === brandFilter
+                );
+            }
+            
+            // Filtrar por unidad
+            if (unitFilter) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.unit === unitFilter
+                );
+            }
+            
+            // Mostrar productos filtrados
+            displayProducts(filteredProducts);
+            
+            // Actualizar contador
+            document.getElementById('itemCount').textContent = `${filteredProducts.length} producto${filteredProducts.length !== 1 ? 's' : ''}`;
+            
+            // Actualizar estadísticas
+            updateStatistics();
+        }
+
+        // ========== ACTUALIZAR ESTADÍSTICAS ==========
+        function updateStatistics() {
+            const totalProducts = products.length;
+            
+            // Obtener marcas únicas
+            const uniqueBrands = [...new Set(products.map(p => p.brand))];
+            
+            // Obtener categorías únicas
+            const uniqueCategories = [...new Set(products.map(p => p.category))];
+            
+            // Calcular valor total del inventario (basado en costo)
+            let totalInventoryValue = 0;
+            products.forEach(product => {
+                totalInventoryValue += product.stock * product.cost;
+            });
+            
+            // Calcular margen promedio
+            let totalMargin = 0;
+            let productsWithCost = 0;
+            products.forEach(product => {
+                if (product.cost > 0) {
+                    totalMargin += calculateMargin(product.price, product.cost);
+                    productsWithCost++;
+                }
+            });
+            const averageMargin = productsWithCost > 0 ? Math.round(totalMargin / productsWithCost) : 0;
+            
+            // Contar productos sin stock
+            const outOfStock = products.filter(p => p.stock === 0).length;
+            
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('totalBrands').textContent = uniqueBrands.length;
+            document.getElementById('totalCategories').textContent = uniqueCategories.length;
+            document.getElementById('totalInventoryValue').textContent = `$${totalInventoryValue.toFixed(2)}`;
+            document.getElementById('averageMargin').textContent = `${averageMargin}%`;
+            document.getElementById('outOfStock').textContent = outOfStock;
+        }
+
+        // ========== MOSTRAR DETALLES DEL PRODUCTO ==========
+        function showProductDetails(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            selectedProduct = product;
+            const margin = calculateMargin(product.price, product.cost);
+            const marginClass = getMarginClass(margin);
+            const totalValue = (product.stock * product.cost).toFixed(2);
+            const profitPerUnit = (product.price - product.cost).toFixed(2);
+            const totalProfit = ((product.price - product.cost) * product.stock).toFixed(2);
+            
+            document.getElementById('productDetails').innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">Código:</span>
+                    <span class="info-value">${product.code}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Nombre:</span>
+                    <span class="info-value">${product.name}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Marca:</span>
+                    <span class="info-value"><span class="brand-tag">${product.brand}</span></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Categoría:</span>
+                    <span class="info-value">${product.category}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Unidad:</span>
+                    <span class="info-value">${product.unit}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Stock actual:</span>
+                    <span class="info-value">${product.stock}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Costo unitario:</span>
+                    <span class="info-value">$${product.cost.toFixed(2)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Precio venta:</span>
+                    <span class="info-value">$${product.price.toFixed(2)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Margen:</span>
+                    <span class="info-value"><span class="margin-badge ${marginClass}">${margin}%</span></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Ganancia por unidad:</span>
+                    <span class="info-value" style="color: #2ecc71;">$${profitPerUnit}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Valor en inventario:</span>
+                    <span class="info-value">$${totalValue}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Ganancia potencial:</span>
+                    <span class="info-value" style="color: #2ecc71;">$${totalProfit}</span>
+                </div>
+                
+                ${product.description ? `
+                <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #ddd;">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.2rem;">Descripción:</div>
+                    <div style="color: #7f8c8d; font-size: 0.7rem;">${product.description}</div>
+                </div>
+                ` : ''}
+                
+                <div style="margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #ddd;">
+                    <button class="action-btn edit-btn" onclick="editProduct(${product.id})" style="width: 100%; justify-content: center;">
+                        <i class="fas fa-edit"></i> Editar Producto
+                    </button>
+                </div>
+            `;
+        }
+
+        // ========== ABRIR MODAL DE PRODUCTO ==========
+        function openProductModal(productId = null) {
+            const modal = document.getElementById('productModal');
+            const title = document.getElementById('modalProductTitle');
+            
+            if (productId) {
+                // Modo edición
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    title.textContent = 'Editar Producto';
+                    document.getElementById('productCode').value = product.code;
+                    document.getElementById('productName').value = product.name;
+                    document.getElementById('productBrand').value = product.brand;
+                    document.getElementById('productCategory').value = product.category;
+                    document.getElementById('productUnit').value = product.unit;
+                    document.getElementById('productStock').value = product.stock;
+                    document.getElementById('productPrice').value = product.price;
+                    document.getElementById('productCost').value = product.cost;
+                    document.getElementById('productDescription').value = product.description || '';
+                    editingProductId = productId;
+                }
+            } else {
+                // Modo nuevo
+                title.textContent = 'Nuevo Producto';
+                document.getElementById('productForm').reset();
+                document.getElementById('productBrand').value = '';
+                document.getElementById('productCategory').value = 'Herramientas';
+                document.getElementById('productUnit').value = 'Pieza';
+                editingProductId = null;
+            }
+            
+            modal.style.display = 'flex';
+            document.getElementById('productCode').focus();
+        }
+
+        // ========== CERRAR MODAL DE PRODUCTO ==========
+        function closeProductModal() {
+            document.getElementById('productModal').style.display = 'none';
+            editingProductId = null;
+        }
+
+        // ========== GUARDAR PRODUCTO ==========
+        function saveProduct(e) {
+            e.preventDefault();
+            
+            const code = document.getElementById('productCode').value.trim().toUpperCase();
+            const name = document.getElementById('productName').value.trim();
+            const brand = document.getElementById('productBrand').value;
+            const category = document.getElementById('productCategory').value;
+            const unit = document.getElementById('productUnit').value;
+            const stock = parseInt(document.getElementById('productStock').value) || 0;
+            const price = parseFloat(document.getElementById('productPrice').value) || 0;
+            const cost = parseFloat(document.getElementById('productCost').value) || 0;
+            const description = document.getElementById('productDescription').value.trim();
+            
+            // Validaciones
+            if (!code || !name || !brand || !price) {
+                showNotification('Los campos marcados con * son obligatorios', 'error');
+                return;
+            }
+            
+            if (stock < 0) {
+                showNotification('El stock no puede ser negativo', 'error');
+                return;
+            }
+            
+            if (price < 0) {
+                showNotification('El precio no puede ser negativo', 'error');
+                return;
+            }
+            
+            if (cost < 0) {
+                showNotification('El costo no puede ser negativo', 'error');
+                return;
+            }
+            
+            if (editingProductId) {
+                // Editar producto existente
+                const index = products.findIndex(p => p.id === editingProductId);
+                if (index !== -1) {
+                    products[index] = {
+                        ...products[index],
+                        code,
+                        name,
+                        brand,
+                        category,
+                        unit,
+                        stock,
+                        price,
+                        cost,
+                        description
+                    };
+                    showNotification('Producto actualizado correctamente', 'success');
+                }
+            } else {
+                // Nuevo producto
+                // Verificar si el código ya existe
+                if (products.some(p => p.code === code)) {
+                    showNotification('El código ya existe', 'error');
+                    return;
+                }
+                
+                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                products.push({
+                    id: newId,
+                    code,
+                    name,
+                    brand,
+                    category,
+                    unit,
+                    stock,
+                    price,
+                    cost,
+                    description
+                });
+                showNotification('Producto agregado correctamente', 'success');
+            }
+            
+            // Guardar y actualizar
+            saveProducts();
+            updateProductsUI();
+            closeProductModal();
+            
+            // Si hay un producto seleccionado, actualizar sus detalles
+            if (selectedProduct && editingProductId === selectedProduct.id) {
+                showProductDetails(selectedProduct.id);
+            }
+        }
+
+        // ========== EDITAR PRODUCTO ==========
+        function editProduct(productId) {
+            openProductModal(productId);
+        }
+
+        // ========== LIMPIAR FILTROS ==========
+        function clearFilters() {
+            document.getElementById('searchProducts').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('brandFilter').value = '';
+            document.getElementById('unitFilter').value = '';
+            updateProductsUI();
+            showNotification('Filtros limpiados', 'info');
+        }
+
+        // ========== GESTIONAR CATEGORÍAS ==========
+        function manageCategories() {
+            showNotification('Función de gestión de categorías en desarrollo', 'info');
+            // En una implementación real, esto abriría un modal para gestionar categorías
+        }
+
+        // ========== AGREGAR MARCA ==========
+        function addBrand() {
+            const newBrand = prompt('Ingresa el nombre de la nueva marca:');
+            if (newBrand && newBrand.trim()) {
+                showNotification(`Marca "${newBrand.trim()}" agregada`, 'success');
+                // En una implementación real, esto agregaría la marca a la lista de opciones
+            }
+        }
+
+        // ========== ACTUALIZAR PRECIOS ==========
+        function updatePrices() {
+            const percentage = prompt('Ingresa el porcentaje de aumento (ej. 10 para 10%):');
+            if (percentage && !isNaN(percentage) && percentage > 0) {
+                if (confirm(`¿Aumentar todos los precios en ${percentage}%?`)) {
+                    products.forEach(product => {
+                        product.price = parseFloat((product.price * (1 + percentage/100)).toFixed(2));
+                    });
+                    saveProducts();
+                    updateProductsUI();
+                    showNotification(`Precios actualizados en ${percentage}%`, 'success');
+                }
+            }
+        }
+
+        // ========== VER ALERTAS DE STOCK ==========
+        function viewStockAlerts() {
+            const lowStockProducts = products.filter(p => p.stock < 20 && p.stock > 0);
+            const outStockProducts = products.filter(p => p.stock === 0);
+            
+            if (lowStockProducts.length === 0 && outStockProducts.length === 0) {
+                showNotification('Todo el stock está en buen nivel', 'info');
+                return;
+            }
+            
+            let message = '📢 ALERTAS DE STOCK 📢\n\n';
+            
+            if (outStockProducts.length > 0) {
+                message += `❌ PRODUCTOS SIN STOCK (${outStockProducts.length}):\n`;
+                outStockProducts.forEach(p => {
+                    message += `• ${p.code} - ${p.name} (${p.brand})\n`;
+                });
+                message += '\n';
+            }
+            
+            if (lowStockProducts.length > 0) {
+                message += `⚠️ PRODUCTOS CON STOCK BAJO (${lowStockProducts.length}):\n`;
+                lowStockProducts.forEach(p => {
+                    message += `• ${p.code} - ${p.name} (Stock: ${p.stock} ${p.unit})\n`;
+                });
+            }
+            
+            alert(message);
+        }
+
+        // ========== ABRIR MODAL DE IMPORTACIÓN ==========
+        function openImportModal() {
+            document.getElementById('importModal').style.display = 'flex';
+        }
+
+        // ========== CERRAR MODAL DE IMPORTACIÓN ==========
+        function closeImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+            document.getElementById('excelFile').value = '';
+            document.getElementById('importProgress').style.display = 'none';
+        }
+
+        // ========== IMPORTAR EXCEL ==========
+        function importExcel() {
+            const fileInput = document.getElementById('excelFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showNotification('Selecciona un archivo Excel', 'error');
+                return;
+            }
+            
+            if (!file.name.match(/\.(xlsx|xls)$/)) {
+                showNotification('Solo se permiten archivos Excel (.xlsx, .xls)', 'error');
+                return;
+            }
+            
+            showNotification('Importando productos desde Excel...', 'info');
+            
+            // Simular importación (en una implementación real usarías una librería como xlsx)
+            setTimeout(() => {
+                // Simular importación de 50 productos
+                const progressBar = document.querySelector('#importProgress .progress-bar');
+                progressBar.style.width = '0%';
+                document.getElementById('importProgress').style.display = 'block';
+                
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 2;
+                    progressBar.style.width = `${progress}%`;
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        
+                        // Simular productos importados
+                        const importedCount = Math.floor(Math.random() * 20) + 30;
+                        
+                        // Agregar productos de ejemplo simulados
+                        for (let i = 0; i < importedCount; i++) {
+                            const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                            const brands = ['Truper', 'Hermex', 'DeWalt', 'Stanley', 'Makita', 'Bosch', 'Sin marca'];
+                            const categories = ['Herramientas', 'Construcción', 'Pintura', 'Ferretería', 'Electricidad', 'Fontanería'];
+                            const units = ['Pieza', 'Metro', 'Kilo', 'Litro', 'Caja', 'Paquete'];
+                            
+                            products.push({
+                                id: newId,
+                                code: `IMP${new Date().getFullYear().toString().substr(-2)}${String(newId).padStart(4, '0')}`,
+                                name: `Producto Importado ${newId}`,
+                                brand: brands[Math.floor(Math.random() * brands.length)],
+                                category: categories[Math.floor(Math.random() * categories.length)],
+                                unit: units[Math.floor(Math.random() * units.length)],
+                                price: parseFloat((Math.random() * 500 + 10).toFixed(2)),
+                                cost: parseFloat((Math.random() * 300 + 5).toFixed(2)),
+                                stock: Math.floor(Math.random() * 100),
+                                description: 'Producto importado desde Excel'
+                            });
+                        }
+                        
+                        saveProducts();
+                        updateProductsUI();
+                        closeImportModal();
+                        showNotification(`${importedCount} productos importados correctamente`, 'success');
+                    }
+                }, 50);
+            }, 500);
+        }
+
+        // ========== EXPORTAR PRODUCTOS ==========
+        function exportProducts() {
+            showNotification('Exportando productos...', 'info');
+            
+            // Simular exportación
+            setTimeout(() => {
+                const csvContent = "Código,Nombre,Marca,Categoría,Unidad,Precio,Costo,Stock,Margen,ValorInventario\n" +
+                    products.map(p => {
+                        const margin = calculateMargin(p.price, p.cost);
+                        const inventoryValue = (p.stock * p.cost).toFixed(2);
+                        return `${p.code},${p.name},${p.brand},${p.category},${p.unit},${p.price},${p.cost},${p.stock},${margin}%,${inventoryValue}`;
+                    }).join("\n");
+                
+                // Crear blob y descargar
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `productos_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                showNotification('Productos exportados correctamente', 'success');
+            }, 500);
+        }
+
+        // ========== FUNCIONES AUXILIARES ==========
+        function calculateMargin(price, cost) {
+            if (cost === 0) return 0;
+            return Math.round(((price - cost) / cost) * 100);
+        }
+
+        function getMarginClass(margin) {
+            if (margin > 50) return 'margin-high';
+            if (margin >= 20 && margin <= 50) return 'margin-medium';
+            return 'margin-low';
+        }
+
+        function getMarginText(margin) {
+            if (margin > 50) return '(Alto)';
+            if (margin >= 20 && margin <= 50) return '(Medio)';
+            return '(Bajo)';
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'success' ? '#2ecc71' : 
+                                           type === 'error' ? '#e74c3c' : 
+                                           type === 'warning' ? '#f39c12' : '#3498db';
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

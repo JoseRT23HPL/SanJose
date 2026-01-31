@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - POS Ferretería San José</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css para animaciones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .login-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Lado izquierdo - Carrusel */
+        .carousel-side {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel-inner {
+            height: 100%;
+        }
+
+        .carousel-item {
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .carousel-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .carousel-caption {
+            position: absolute;
+            bottom: 20%;
+            left: 10%;
+            text-align: left;
+            z-index: 2;
+        }
+
+        .carousel-caption h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1rem;
+        }
+
+        .carousel-caption p {
+            font-size: 1.2rem;
+            color: #f8f9fa;
+            max-width: 80%;
+        }
+
+        /* Lado derecho - Formulario */
+        .form-side {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            animation: fadeInDown 1s;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo-subtext {
+            color: #3498db;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .form-control {
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            border: 2px solid #e0e0e0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            z-index: 3;
+        }
+
+        .btn-login {
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+            padding: 1rem;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .role-btn:hover {
+            border-color: #3498db;
+        }
+
+        .role-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .role-btn i {
+            display: block;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links {
+            text-align: center;
+            margin-top: 2rem;
+            color: #7f8c8d;
+        }
+
+        .footer-links a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animaciones personalizadas */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .carousel-side {
+                height: 40vh;
+            }
+            
+            .carousel-item {
+                height: 40vh;
+            }
+            
+            .form-side {
+                height: 60vh;
+                padding: 2rem;
+            }
+            
+            .logo-text {
+                font-size: 1.8rem;
+            }
+            
+            .carousel-caption {
+                bottom: 10%;
+            }
+            
+            .carousel-caption h3 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-side {
+                padding: 1.5rem;
+            }
+            
+            .logo-text {
+                font-size: 1.5rem;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .role-selector {
+                flex-direction: column;
+            }
+        }
+
+        /* Partículas decorativas */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: particleFloat linear infinite;
+        }
+
+        @keyframes particleFloat {
+            to {
+                transform: translateY(-1000px) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Partículas decorativas -->
+    <div class="particles" id="particles"></div>
+
+    <div class="login-container">
+        <!-- Lado izquierdo: Carrusel de imágenes -->
+        <div class="carousel-side">
+            <div id="loginCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#loginCarousel" data-bs-slide-to="0" class="active"></button>
+                    <button type="button" data-bs-target="#loginCarousel" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#loginCarousel" data-bs-slide-to="2"></button>
+                    <button type="button" data-bs-target="#loginCarousel" data-bs-slide-to="3"></button>
+                </div>
+                <div class="carousel-inner">
+                    <!-- Imagen 1 -->
+                    <div class="carousel-item active" style="background-image: url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                        <div class="carousel-overlay"></div>
+                        <div class="carousel-caption animate__animated animate__fadeInLeft">
+                            <h3>Ferretería San José</h3>
+                            <p>Más de 10,000 productos en inventario para todas sus necesidades de construcción y hogar.</p>
+                        </div>
+                    </div>
+                    <!-- Imagen 2 -->
+                    <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80');">
+                        <div class="carousel-overlay"></div>
+                        <div class="carousel-caption animate__animated animate__fadeInLeft">
+                            <h3>Sistema POS Moderno</h3>
+                            <p>Control completo de ventas, inventario y reportes con funcionamiento online y offline.</p>
+                        </div>
+                    </div>
+                    <!-- Imagen 3 -->
+                    <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                        <div class="carousel-overlay"></div>
+                        <div class="carousel-caption animate__animated animate__fadeInLeft">
+                            <h3>Gestión de Inventario</h3>
+                            <p>Alertas automáticas para productos con stock bajo y control detallado de entradas y salidas.</p>
+                        </div>
+                    </div>
+                    <!-- Imagen 4 -->
+                    <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1600585154340-043788447ebf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+                        <div class="carousel-overlay"></div>
+                        <div class="carousel-caption animate__animated animate__fadeInLeft">
+                            <h3>Reportes en Tiempo Real</h3>
+                            <p>Genere reportes diarios, semanales y mensuales de ventas y ganancias.</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#loginCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#loginCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Lado derecho: Formulario de login -->
+        <div class="form-side">
+            <div class="logo-container animate__animated animate__fadeInDown">
+                <div class="logo animate-float">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h1 class="logo-text">Ferretería San José</h1>
+                <p class="logo-subtext">SISTEMA DE PUNTO DE VENTA</p>
+            </div>
+
+            <form id="loginForm" class="login-form animate__animated animate__fadeInUp">
+                <h3 class="mb-4 text-center">Iniciar Sesión</h3>
+                
+                <!-- Selección de rol -->
+                <div class="role-selector">
+                    <div class="role-btn active" data-role="admin">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Administrador</span>
+                    </div>
+                    <div class="role-btn" data-role="superadmin">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Super Admin</span>
+                    </div>
+                </div>
+                
+                <!-- Usuario -->
+                <div class="input-group">
+                    <input type="text" 
+                           class="form-control" 
+                           id="username" 
+                           placeholder="Usuario" 
+                           required>
+                    <span class="input-icon">
+                        <i class="fas fa-user"></i>
+                    </span>
+                </div>
+                
+                <!-- Contraseña -->
+                <div class="input-group">
+                    <input type="password" 
+                           class="form-control" 
+                           id="password" 
+                           placeholder="Contraseña" 
+                           required>
+                    <span class="input-icon">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                </div>
+                
+                <!-- Recordarme -->
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">
+                        Recordar mi usuario
+                    </label>
+                </div>
+                
+                <!-- Botón de login -->
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt me-2"></i>INGRESAR AL SISTEMA
+                </button>
+                
+                <!-- Estado de conexión -->
+                <div class="mt-3 text-center">
+                    <small id="connectionStatus" class="text-success">
+                        <i class="fas fa-wifi me-1"></i> Conectado
+                    </small>
+                </div>
+            </form>
+            
+            <!-- Enlaces de pie -->
+            <div class="footer-links animate__animated animate__fadeInUp">
+                <small>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#helpModal">
+                        <i class="fas fa-question-circle me-1"></i>Ayuda
+                    </a> | 
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">
+                        <i class="fas fa-info-circle me-1"></i>Acerca del Sistema
+                    </a>
+                </small>
+                <p class="mt-2"><small>v1.0 - Sistema POS con funcionalidad Offline</small></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda -->
+    <div class="modal fade" id="helpModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-question-circle me-2"></i>Ayuda - Acceso al Sistema</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Credenciales de prueba:</h6>
+                    <ul>
+                        <li><strong>Administrador:</strong> usuario: admin / contraseña: admin123</li>
+                        <li><strong>Super Administrador:</strong> usuario: superadmin / contraseña: super123</li>
+                    </ul>
+                    <hr>
+                    <h6>Funcionalidades por rol:</h6>
+                    <p><strong>Administrador:</strong> Venta de productos, corte de caja parcial, consulta de inventario.</p>
+                    <p><strong>Super Administrador:</strong> Todas las funciones anteriores más gestión de usuarios, productos, categorías y reportes completos.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Acerca del Sistema -->
+    <div class="modal fade" id="aboutModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-info-circle me-2"></i>Acerca del Sistema POS</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Sistema de Punto de Venta - Ferretería San José</h6>
+                    <p>Sistema desarrollado para la gestión integral de una ferretería con las siguientes características:</p>
+                    <ul>
+                        <li>Ventas con y sin conexión a internet</li>
+                        <li>Control de inventario con alertas automáticas</li>
+                        <li>Gestión de múltiples usuarios con permisos</li>
+                        <li>Reportes de ventas y ganancias</li>
+                        <li>Corte de caja diario</li>
+                        <li>Importación de productos desde Excel</li>
+                    </ul>
+                    <p><strong>Versión:</strong> 1.0</p>
+                    <p><strong>Tecnologías:</strong> HTML5, CSS3, JavaScript, Bootstrap 5, PWA</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Crear partículas decorativas
+            createParticles();
+            
+            // Configurar selector de rol
+            setupRoleSelector();
+            
+            // Configurar formulario de login
+            setupLoginForm();
+            
+            // Verificar estado de conexión
+            checkConnectionStatus();
+            
+            // Cargar usuario recordado si existe
+            loadRememberedUser();
+        });
+        
+        // ========== PARTÍCULAS DECORATIVAS ==========
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Tamaño aleatorio
+                const size = Math.random() * 5 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Posición aleatoria
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Opacidad aleatoria
+                particle.style.opacity = Math.random() * 0.5 + 0.2;
+                
+                // Duración de animación aleatoria
+                const duration = Math.random() * 20 + 10;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // ========== SELECTOR DE ROL ==========
+        function setupRoleSelector() {
+            const roleButtons = document.querySelectorAll('.role-btn');
+            
+            roleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remover clase active de todos los botones
+                    roleButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Agregar clase active al botón clickeado
+                    this.classList.add('active');
+                    
+                    // Efecto visual
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+        }
+        
+        // ========== FORMULARIO DE LOGIN ==========
+        function setupLoginForm() {
+            const loginForm = document.getElementById('loginForm');
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+                const roleBtn = document.querySelector('.role-btn.active');
+                const role = roleBtn ? roleBtn.getAttribute('data-role') : 'admin';
+                
+                // Validación básica
+                if (!username || !password) {
+                    showAlert('Por favor complete todos los campos', 'danger');
+                    return;
+                }
+                
+                // Simulación de credenciales (en producción esto se haría con backend)
+                const validCredentials = {
+                    'admin': { password: 'admin123', name: 'Administrador' },
+                    'superadmin': { password: 'super123', name: 'Super Administrador' }
+                };
+                
+                // Credenciales de prueba
+                let isValid = false;
+                let userData = null;
+                
+                if (validCredentials[username]) {
+                    if (validCredentials[username].password === password) {
+                        isValid = true;
+                        userData = {
+                            username: username,
+                            name: validCredentials[username].name,
+                            role: role
+                        };
+                    }
+                }
+                
+                // También aceptamos cualquier combinación para desarrollo
+                if (!isValid && (username === 'admin' && password === 'admin123') || 
+                    (username === 'superadmin' && password === 'super123')) {
+                    isValid = true;
+                    userData = {
+                        username: username,
+                        name: username === 'admin' ? 'Administrador' : 'Super Administrador',
+                        role: role
+                    };
+                }
+                
+                if (isValid) {
+                    // Guardar usuario si "Recordarme" está marcado
+                    if (rememberMe) {
+                        localStorage.setItem('rememberedUser', JSON.stringify({
+                            username: username,
+                            role: role
+                        }));
+                    } else {
+                        localStorage.removeItem('rememberedUser');
+                    }
+                    
+                    // Mostrar animación de éxito
+                    const loginBtn = loginForm.querySelector('.btn-login');
+                    const originalText = loginBtn.innerHTML;
+                    
+                    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>VERIFICANDO...';
+                    loginBtn.disabled = true;
+                    
+                    // Simular verificación con el servidor
+                    setTimeout(() => {
+                        loginBtn.innerHTML = '<i class="fas fa-check me-2"></i>ACCESO CONCEDIDO';
+                        loginBtn.style.background = 'linear-gradient(to right, #2ecc71, #27ae60)';
+                        
+                        // Redirigir a la pantalla principal después de un momento
+                        setTimeout(() => {
+                            // En un sistema real, aquí redirigiríamos a dashboard.html
+                            // Por ahora mostramos un mensaje
+                            showAlert(`¡Bienvenido ${userData.name}! Redirigiendo al sistema...`, 'success');
+                            
+                            // Guardar datos de usuario en sessionStorage para el dashboard
+                            sessionStorage.setItem('currentUser', JSON.stringify(userData));
+                            
+                            // En producción, redirigiríamos a la página principal del POS
+                            // window.location.href = 'dashboard.html';
+                            
+                            // Por ahora, recargamos la página para simular
+                            setTimeout(() => {
+                                // Esta sería la redirección real:
+                                // window.location.href = 'pos-dashboard.html';
+                                
+                                // Para este ejemplo, mostramos un mensaje de éxito
+                                alert(`Acceso exitoso como ${userData.role === 'superadmin' ? 'Super Administrador' : 'Administrador'}\n\nEn el sistema completo, aquí se redirigiría al dashboard principal.`);
+                                
+                                // Restaurar botón
+                                loginBtn.innerHTML = originalText;
+                                loginBtn.disabled = false;
+                                loginBtn.style.background = 'linear-gradient(to right, #3498db, #2c3e50)';
+                            }, 1500);
+                        }, 1000);
+                    }, 1500);
+                } else {
+                    showAlert('Usuario o contraseña incorrectos', 'danger');
+                    
+                    // Efecto de vibración en el formulario
+                    loginForm.classList.add('animate__animated', 'animate__shakeX');
+                    setTimeout(() => {
+                        loginForm.classList.remove('animate__animated', 'animate__shakeX');
+                    }, 1000);
+                }
+            });
+        }
+        
+        // ========== CARGAR USUARIO RECORDADO ==========
+        function loadRememberedUser() {
+            const remembered = localStorage.getItem('rememberedUser');
+            if (remembered) {
+                try {
+                    const user = JSON.parse(remembered);
+                    document.getElementById('username').value = user.username;
+                    document.getElementById('rememberMe').checked = true;
+                    
+                    // Seleccionar el rol correspondiente
+                    const roleButtons = document.querySelectorAll('.role-btn');
+                    roleButtons.forEach(button => {
+                        button.classList.remove('active');
+                        if (button.getAttribute('data-role') === user.role) {
+                            button.classList.add('active');
+                        }
+                    });
+                } catch (e) {
+                    console.error('Error al cargar usuario recordado:', e);
+                }
+            }
+        }
+        
+        // ========== VERIFICAR ESTADO DE CONEXIÓN ==========
+        function checkConnectionStatus() {
+            const statusElement = document.getElementById('connectionStatus');
+            
+            function updateStatus() {
+                if (navigator.onLine) {
+                    statusElement.innerHTML = '<i class="fas fa-wifi me-1"></i> Conectado';
+                    statusElement.className = 'text-success';
+                } else {
+                    statusElement.innerHTML = '<i class="fas fa-wifi-slash me-1"></i> Modo Offline';
+                    statusElement.className = 'text-warning';
+                }
+            }
+            
+            // Estado inicial
+            updateStatus();
+            
+            // Escuchar cambios en la conexión
+            window.addEventListener('online', updateStatus);
+            window.addEventListener('offline', updateStatus);
+        }
+        
+        // ========== MOSTRAR ALERTAS ==========
+        function showAlert(message, type) {
+            // Crear elemento de alerta
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '9999';
+            alertDiv.style.minWidth = '300px';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            // Agregar al documento
+            document.body.appendChild(alertDiv);
+            
+            // Auto-eliminar después de 5 segundos
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+        
+        // ========== EFECTOS VISUALES ADICIONALES ==========
+        // Efecto al pasar el ratón sobre los campos de entrada
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.querySelector('.input-icon').style.color = '#3498db';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.querySelector('.input-icon').style.color = '#7f8c8d';
+            });
+        });
+    </script>
+</body>
+</html>

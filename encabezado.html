@@ -1,0 +1,260 @@
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encabezado - Ferretería San José</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12px;
+        }
+
+        /* Header ultra compacto */
+        .main-header {
+            background: white;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            padding: 0.25rem 0.5rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .logo-icon {
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+
+        .logo-text {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.75rem;
+        }
+
+        .user-role {
+            font-size: 0.65rem;
+            color: #3498db;
+            background: rgba(52, 152, 219, 0.1);
+            padding: 1px 3px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Menú desplegable ultra compacto */
+        .dropdown-menu {
+            min-width: 150px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: none;
+            padding: 0.2rem 0;
+            font-size: 0.75rem;
+        }
+
+        .dropdown-item {
+            padding: 0.4rem 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            font-size: 0.75rem;
+            transition: all 0.15s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #3498db;
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        /* Botones compactos */
+        .btn-sm {
+            padding: 0.2rem 0.4rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-outline-primary {
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-outline-danger {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-header {
+                padding: 0.2rem 0.4rem;
+                height: 45px;
+            }
+            
+            .logo-text {
+                font-size: 0.85rem;
+            }
+            
+            .logo-icon {
+                font-size: 1rem;
+            }
+            
+            .user-name {
+                font-size: 0.7rem;
+            }
+            
+            .user-role {
+                font-size: 0.6rem;
+            }
+            
+            .btn-sm {
+                padding: 0.15rem 0.3rem;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="logo-container">
+            <div class="logo-icon">
+                <i class="fas fa-tools"></i>
+            </div>
+            <div>
+                <div class="logo-text">Ferretería San José</div>
+                <small class="text-muted" style="font-size: 0.65rem;">VENTAS RÁPIDAS</small>
+            </div>
+        </div>
+        
+        <div class="header-controls">
+            <!-- Menú desplegable -->
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="mainMenu" data-bs-toggle="dropdown">
+                    <i class="fas fa-bars me-1"></i> Menú
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="mainMenu">
+                    <li><small class="dropdown-item text-muted" style="font-size: 0.65rem;">Vistas del Sistema</small></li>
+                    <li><a class="dropdown-item active" href="venta.html">
+                        <i class="fas fa-cash-register text-primary" style="font-size: 0.8rem;"></i>
+                        <span>Punto de Venta</span>
+                    </a></li>
+                    <li><a class="dropdown-item" href="productos.html">
+                        <i class="fas fa-boxes text-success" style="font-size: 0.8rem;"></i>
+                        <span>Productos</span>
+                    </a></li>
+                    <li><a class="dropdown-item" href="inventario.html">
+                        <i class="fas fa-clipboard-list text-info" style="font-size: 0.8rem;"></i>
+                        <span>Inventario</span>
+                    </a></li>
+                    <li><a class="dropdown-item" href="#">
+                        <i class="fas fa-chart-bar text-warning" style="font-size: 0.8rem;"></i>
+                        <span>Reportes</span>
+                    </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">
+                        <i class="fas fa-cog text-secondary" style="font-size: 0.8rem;"></i>
+                        <span>Configuración</span>
+                    </a></li>
+                </ul>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-name" id="currentUserName">Admin</div>
+                <div class="user-role" id="currentUserRole">Admin</div>
+            </div>
+            
+            <button id="logoutBtn" class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Función para actualizar información del usuario
+        function setUserInfo(name, role) {
+            document.getElementById('currentUserName').textContent = name;
+            document.getElementById('currentUserRole').textContent = role;
+        }
+
+        // Función para logout
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            if (confirm('¿Salir del sistema?')) {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Función para marcar vista activa
+        function setActiveView(viewName) {
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Encontrar y marcar como activo el item correspondiente
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                if (item.textContent.includes(viewName)) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Inicializar con usuario por defecto
+        document.addEventListener('DOMContentLoaded', function() {
+            setUserInfo('Admin', 'Administrador');
+        });
+    </script>
+</body>
+</html>

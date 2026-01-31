@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - Ferretería San José</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            height: 100vh;
+            overflow: hidden;
+            font-size: 12px;
+        }
+
+        /* Contenedor principal ultra compacto */
+        .main-container {
+            margin-top: 50px;
+            padding: 0.5rem;
+            height: calc(100vh - 50px);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        /* Encabezado de la página */
+        .page-header {
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            color: #2c3e50;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        /* Controles de búsqueda y filtros */
+        .controls-section {
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            align-items: center;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-input-group {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .search-input::placeholder {
+            color: #95a5a6;
+            font-size: 0.75rem;
+        }
+
+        .search-input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 1px rgba(52, 152, 219, 0.1);
+            outline: none;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 2px;
+            padding: 0.25rem 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+
+        .search-btn:hover {
+            background: #2980b9;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.75rem;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            min-width: 120px;
+        }
+
+        /* Área principal del inventario */
+        .inventory-area {
+            flex: 1;
+            display: flex;
+            gap: 0.6rem;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* Tabla de inventario */
+        .inventory-section {
+            flex: 2;
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .item-count {
+            background: #3498db;
+            color: white;
+            padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Tabla de productos */
+        .table-container {
+            flex: 1;
+            overflow: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .inventory-table thead {
+            background: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .inventory-table th {
+            padding: 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #e0e0e0;
+            white-space: nowrap;
+        }
+
+        .inventory-table td {
+            padding: 0.4rem 0.5rem;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .inventory-table tbody tr:hover {
+            background-color: #f8fafd;
+        }
+
+        .inventory-table tbody tr.low-stock {
+            background-color: #fff3cd;
+        }
+
+        .inventory-table tbody tr.out-of-stock {
+            background-color: #f8d7da;
+        }
+
+        /* Columnas específicas */
+        .col-code {
+            width: 80px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .col-name {
+            min-width: 150px;
+        }
+
+        .col-category {
+            width: 100px;
+        }
+
+        .col-stock {
+            width: 70px;
+            text-align: center;
+        }
+
+        .col-price {
+            width: 80px;
+            text-align: right;
+        }
+
+        .col-value {
+            width: 90px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .col-actions {
+            width: 70px;
+            text-align: center;
+        }
+
+        /* Indicadores de stock */
+        .stock-badge {
+            padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .stock-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .stock-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .stock-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .stock-out {
+            background: #f5c6cb;
+            color: #721c24;
+        }
+
+        /* Botones de acción */
+        .action-btn {
+            padding: 0.2rem 0.4rem;
+            border: none;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .action-btn.edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-btn.edit-btn:hover {
+            background: #2980b9;
+        }
+
+        .action-btn.delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .action-btn.delete-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Panel de resumen */
+        .summary-section {
+            flex: 1;
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            min-width: 280px;
+            max-width: 320px;
+        }
+
+        .summary-header {
+            margin-bottom: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        .summary-title {
+            color: #2c3e50;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        /* Estadísticas del inventario */
+        .stats-container {
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.4rem;
+            font-size: 0.75rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .stat-value.total {
+            color: #2ecc71;
+            font-size: 0.85rem;
+        }
+
+        /* Acciones rápidas */
+        .quick-actions {
+            margin-bottom: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .actions-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .action-button {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        .action-button.primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .action-button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .action-button.success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .action-button.success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(46, 204, 113, 0.1);
+        }
+
+        .action-button.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .action-button.warning:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(243, 156, 18, 0.1);
+        }
+
+        /* Panel de detalles del producto */
+        .product-details {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 0.8rem;
+            border: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+
+        .details-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.6rem;
+            font-size: 0.8rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .product-info {
+            font-size: 0.75rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #7f8c8d;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* Notificaciones */
+        #notification {
+            display: none;
+            position: fixed;
+            top: 55px;
+            right: 8px;
+            background: #2ecc71;
+            color: white;
+            padding: 0.4rem 0.6rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            z-index: 1001;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Scrollbar personalizado */
+        .table-container::-webkit-scrollbar,
+        .product-details::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-track,
+        .product-details::-webkit-scrollbar-track {
+            background: #f8f9fa;
+            border-radius: 2px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb,
+        .product-details::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 2px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .inventory-area {
+                flex-direction: column;
+            }
+            
+            .summary-section {
+                min-width: auto;
+                max-width: none;
+                max-height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin-top: 45px;
+                padding: 0.4rem;
+                height: calc(100vh - 45px);
+                gap: 0.4rem;
+            }
+            
+            .controls-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-container {
+                min-width: 100%;
+            }
+            
+            .filter-container {
+                justify-content: center;
+            }
+            
+            .inventory-section, .summary-section {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cargar encabezado -->
+    <div id="header-container"></div>
+
+    <!-- Notificaciones -->
+    <div id="notification"></div>
+
+    <!-- Contenedor principal -->
+    <div class="main-container">
+        <!-- Encabezado de página -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-clipboard-list text-primary me-2"></i>
+                INVENTARIO DE PRODUCTOS
+            </h1>
+            <div class="header-actions">
+                <button class="action-button primary" id="exportBtn">
+                    <i class="fas fa-file-export"></i>
+                    Exportar
+                </button>
+                <button class="action-button success" id="addProductBtn">
+                    <i class="fas fa-plus"></i>
+                    Nuevo Producto
+                </button>
+            </div>
+        </div>
+
+        <!-- Controles de búsqueda y filtros -->
+        <div class="controls-section">
+            <div class="search-container">
+                <div class="search-input-group">
+                    <input type="text" 
+                           id="searchInventory" 
+                           class="search-input" 
+                           placeholder="Buscar producto por código, nombre o categoría..."
+                           autofocus>
+                    <button id="searchInventoryBtn" class="search-btn">
+                        <i class="fas fa-search me-1"></i> BUSCAR
+                    </button>
+                </div>
+            </div>
+            
+            <div class="filter-container">
+                <select id="categoryFilter" class="filter-select">
+                    <option value="">Todas las categorías</option>
+                    <option value="Herramientas">Herramientas</option>
+                    <option value="Construcción">Construcción</option>
+                    <option value="Pintura">Pintura</option>
+                    <option value="Ferretería">Ferretería</option>
+                    <option value="Electricidad">Electricidad</option>
+                    <option value="Fontanería">Fontanería</option>
+                </select>
+                
+                <select id="stockFilter" class="filter-select">
+                    <option value="">Todo el stock</option>
+                    <option value="high">Stock Alto</option>
+                    <option value="medium">Stock Medio</option>
+                    <option value="low">Stock Bajo</option>
+                    <option value="out">Sin Stock</option>
+                </select>
+                
+                <button id="clearFiltersBtn" class="action-button warning" style="padding: 0.4rem 0.6rem;">
+                    <i class="fas fa-times"></i>
+                    Limpiar
+                </button>
+            </div>
+        </div>
+
+        <!-- Área principal del inventario -->
+        <div class="inventory-area">
+            <!-- Tabla de inventario -->
+            <div class="inventory-section">
+                <div class="inventory-header">
+                    <h2 class="section-title">LISTA DE PRODUCTOS</h2>
+                    <div class="item-count" id="itemCount">0 productos</div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th class="col-code">CÓDIGO</th>
+                                <th class="col-name">NOMBRE DEL PRODUCTO</th>
+                                <th class="col-category">CATEGORÍA</th>
+                                <th class="col-stock">STOCK</th>
+                                <th class="col-price">PRECIO</th>
+                                <th class="col-value">VALOR</th>
+                                <th class="col-actions">ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <!-- Los productos se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Panel de resumen -->
+            <div class="summary-section">
+                <div class="summary-header">
+                    <h2 class="summary-title">RESUMEN DEL INVENTARIO</h2>
+                </div>
+                
+                <!-- Estadísticas -->
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span>Productos totales:</span>
+                        <span class="stat-value" id="totalProducts">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Valor total:</span>
+                        <span class="stat-value total" id="totalValue">$0.00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Stock alto:</span>
+                        <span class="stat-value" id="highStock">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Stock medio:</span>
+                        <span class="stat-value" id="mediumStock">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Stock bajo:</span>
+                        <span class="stat-value" id="lowStock">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Sin stock:</span>
+                        <span class="stat-value" id="outStock">0</span>
+                    </div>
+                </div>
+                
+                <!-- Acciones rápidas -->
+                <div class="quick-actions">
+                    <h5 class="actions-title">ACCIONES RÁPIDAS</h5>
+                    <div class="action-buttons">
+                        <button class="action-button primary" id="adjustStockBtn">
+                            <i class="fas fa-exchange-alt"></i>
+                            Ajustar Stock
+                        </button>
+                        <button class="action-button success" id="generateReportBtn">
+                            <i class="fas fa-chart-bar"></i>
+                            Generar Reporte
+                        </button>
+                        <button class="action-button warning" id="lowStockAlertBtn">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Alertas Bajo Stock
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Detalles del producto seleccionado -->
+                <div class="product-details">
+                    <h5 class="details-title">DETALLES DEL PRODUCTO</h5>
+                    <div class="product-info" id="productDetails">
+                        <p class="text-muted" style="font-size: 0.7rem; text-align: center; padding: 1rem;">
+                            <i class="fas fa-mouse-pointer fa-lg mb-2"></i><br>
+                            Selecciona un producto para ver sus detalles
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nuevo producto/editar -->
+    <div id="productModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 2000;">
+        <div class="modal-content" style="background: white; border-radius: 6px; padding: 1rem; width: 90%; max-width: 400px; animation: modalAppear 0.15s ease;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f1f1;">
+                <h2 class="modal-title" style="font-size: 0.9rem; color: #2c3e50; display: flex; align-items: center; gap: 0.4rem;">
+                    <i class="fas fa-box"></i>
+                    <span id="modalProductTitle">Nuevo Producto</span>
+                </h2>
+                <button class="close-modal" id="closeProductModal" style="background: none; border: none; font-size: 1rem; color: #7f8c8d; cursor: pointer; padding: 0.25rem; border-radius: 50%;">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-group mb-2">
+                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Código</label>
+                        <input type="text" 
+                               id="productCode" 
+                               class="form-control" 
+                               placeholder="Ej: MART001"
+                               style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                               required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Nombre</label>
+                        <input type="text" 
+                               id="productName" 
+                               class="form-control" 
+                               placeholder="Nombre del producto"
+                               style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                               required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Categoría</label>
+                        <select id="productCategory" 
+                                class="form-control" 
+                                style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;">
+                            <option value="Herramientas">Herramientas</option>
+                            <option value="Construcción">Construcción</option>
+                            <option value="Pintura">Pintura</option>
+                            <option value="Ferretería">Ferretería</option>
+                            <option value="Electricidad">Electricidad</option>
+                            <option value="Fontanería">Fontanería</option>
+                        </select>
+                    </div>
+                    
+                    <div class="row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <div class="col" style="flex: 1;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Stock</label>
+                                <input type="number" 
+                                       id="productStock" 
+                                       class="form-control" 
+                                       placeholder="0"
+                                       min="0"
+                                       style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col" style="flex: 1;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Precio ($)</label>
+                                <input type="number" 
+                                       id="productPrice" 
+                                       class="form-control" 
+                                       placeholder="0.00"
+                                       step="0.01"
+                                       min="0"
+                                       style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions" style="display: flex; gap: 0.4rem; margin-top: 1rem;">
+                        <button type="button" class="modal-btn modal-btn-secondary" id="cancelProductBtn" style="flex: 1; padding: 0.4rem; background: #f8f9fa; color: #2c3e50; border: none; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" class="modal-btn modal-btn-primary" id="saveProductBtn" style="flex: 1; padding: 0.4rem; background: #3498db; color: white; border: none; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // ========== CONFIGURACIÓN ==========
+        let inventory = [];
+        let editingProductId = null;
+        let selectedProduct = null;
+
+        // Inventario inicial de ejemplo
+        const initialInventory = [
+            { id: 1, code: 'MART001', name: 'Martillo 16oz Truper', category: 'Herramientas', stock: 45, price: 289.50 },
+            { id: 2, code: 'MART002', name: 'Martillo de Uña Hermex', category: 'Herramientas', stock: 32, price: 185.00 },
+            { id: 3, code: 'DEST001', name: 'Desarmador Plano 1/4"', category: 'Herramientas', stock: 120, price: 35.80 },
+            { id: 4, code: 'DEST002', name: 'Desarmador Phillips #2', category: 'Herramientas', stock: 98, price: 42.50 },
+            { id: 5, code: 'CEME001', name: 'Cemento Gris 50kg', category: 'Construcción', stock: 25, price: 285.00 },
+            { id: 6, code: 'CEME002', name: 'Cemento Blanco 25kg', category: 'Construcción', stock: 15, price: 320.00 },
+            { id: 7, code: 'PINT001', name: 'Pintura Blanca 4L', category: 'Pintura', stock: 38, price: 325.00 },
+            { id: 8, code: 'PINT002', name: 'Pintura Roja 1L', category: 'Pintura', stock: 56, price: 95.00 },
+            { id: 9, code: 'CLAV001', name: 'Clavos 2" x 1kg', category: 'Ferretería', stock: 85, price: 28.50 },
+            { id: 10, code: 'CLAV002', name: 'Clavos 3" x 1kg', category: 'Ferretería', stock: 72, price: 32.00 },
+            { id: 11, code: 'CABL001', name: 'Cable Cal.12 10m', category: 'Electricidad', stock: 42, price: 152.00 },
+            { id: 12, code: 'TUBO001', name: 'Tubo PVC 1/2" x 3m', category: 'Fontanería', stock: 63, price: 85.00 },
+            { id: 13, code: 'SIER001', name: 'Sierra de Arco', category: 'Herramientas', stock: 8, price: 420.00 },
+            { id: 14, code: 'FOCO001', name: 'Foco LED 12W', category: 'Electricidad', stock: 95, price: 35.00 },
+            { id: 15, code: 'CINT001', name: 'Cinta Aislante', category: 'Electricidad', stock: 110, price: 22.50 },
+            { id: 16, code: 'GUAN001', name: 'Guantes de Cuero', category: 'Herramientas', stock: 28, price: 125.00 },
+            { id: 17, code: 'BROC001', name: 'Brocha 4"', category: 'Pintura', stock: 51, price: 68.00 },
+            { id: 18, code: 'TALA001', name: 'Taladro Percutor', category: 'Herramientas', stock: 12, price: 850.00 },
+            { id: 19, code: 'LIJA001', name: 'Lija para Madera', category: 'Herramientas', stock: 0, price: 15.00 },
+            { id: 20, code: 'PINC001', name: 'Pinzas de Electricista', category: 'Herramientas', stock: 5, price: 75.00 }
+        ];
+
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar encabezado
+            loadHeader();
+            
+            // Cargar inventario desde localStorage o usar el inicial
+            loadInventory();
+            
+            // Configurar eventos
+            setupEventListeners();
+            
+            // Mostrar inventario
+            updateInventoryUI();
+            
+            // Poner foco en búsqueda
+            document.getElementById('searchInventory').focus();
+        });
+
+        // ========== CARGAR ENCABEZADO ==========
+        function loadHeader() {
+            fetch('encabezado.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                    
+                    // Marcar vista activa en el menú
+                    setTimeout(() => {
+                        // Buscar y marcar como activo el item de Inventario
+                        document.querySelectorAll('.dropdown-item').forEach(item => {
+                            if (item.textContent.includes('Inventario')) {
+                                item.classList.add('active');
+                            }
+                        });
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error cargando el encabezado:', error);
+                    // Cargar encabezado simple si falla
+                    document.getElementById('header-container').innerHTML = `
+                        <header class="main-header" style="background: white; padding: 0.25rem 0.5rem; height: 50px;">
+                            <div class="logo-container">
+                                <div class="logo-icon"><i class="fas fa-tools"></i></div>
+                                <div>
+                                    <div class="logo-text">Ferretería San José</div>
+                                    <small class="text-muted">INVENTARIO</small>
+                                </div>
+                            </div>
+                            <button onclick="window.location.href='ventas.html'" class="btn btn-sm btn-outline-primary me-2">
+                                <i class="fas fa-cash-register"></i> Ventas
+                            </button>
+                        </header>
+                    `;
+                });
+        }
+
+        // ========== CARGAR INVENTARIO ==========
+        function loadInventory() {
+            const savedInventory = localStorage.getItem('ferreteriaInventory');
+            if (savedInventory) {
+                inventory = JSON.parse(savedInventory);
+            } else {
+                // Usar inventario inicial
+                inventory = [...initialInventory];
+                saveInventory();
+            }
+        }
+
+        // ========== GUARDAR INVENTARIO ==========
+        function saveInventory() {
+            localStorage.setItem('ferreteriaInventory', JSON.stringify(inventory));
+        }
+
+        // ========== CONFIGURAR EVENTOS ==========
+        function setupEventListeners() {
+            // Búsqueda
+            document.getElementById('searchInventory').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchInventory(this.value.trim());
+                }
+            });
+            
+            document.getElementById('searchInventoryBtn').addEventListener('click', function() {
+                const searchTerm = document.getElementById('searchInventory').value.trim();
+                searchInventory(searchTerm);
+            });
+            
+            // Filtros
+            document.getElementById('categoryFilter').addEventListener('change', updateInventoryUI);
+            document.getElementById('stockFilter').addEventListener('change', updateInventoryUI);
+            document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
+            
+            // Botones de acción
+            document.getElementById('addProductBtn').addEventListener('click', openProductModal);
+            document.getElementById('exportBtn').addEventListener('click', exportInventory);
+            document.getElementById('adjustStockBtn').addEventListener('click', adjustStock);
+            document.getElementById('generateReportBtn').addEventListener('click', generateReport);
+            document.getElementById('lowStockAlertBtn').addEventListener('click', showLowStockAlerts);
+            
+            // Modal de producto
+            document.getElementById('closeProductModal').addEventListener('click', closeProductModal);
+            document.getElementById('cancelProductBtn').addEventListener('click', closeProductModal);
+            document.getElementById('productForm').addEventListener('submit', saveProduct);
+        }
+
+        // ========== BUSCAR EN INVENTARIO ==========
+        function searchInventory(searchTerm) {
+            if (!searchTerm) {
+                updateInventoryUI();
+                return;
+            }
+            
+            const searchLower = searchTerm.toLowerCase();
+            const filtered = inventory.filter(product => 
+                product.code.toLowerCase().includes(searchLower) ||
+                product.name.toLowerCase().includes(searchLower) ||
+                product.category.toLowerCase().includes(searchLower)
+            );
+            
+            displayInventory(filtered);
+            
+            // Mostrar mensaje si no hay resultados
+            if (filtered.length === 0) {
+                document.getElementById('inventoryTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+                            <i class="fas fa-search fa-lg mb-2"></i><br>
+                            No se encontraron productos para "${searchTerm}"
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // ========== MOSTRAR INVENTARIO ==========
+        function displayInventory(products) {
+            const tbody = document.getElementById('inventoryTableBody');
+            tbody.innerHTML = '';
+            
+            products.forEach(product => {
+                const stockClass = getStockClass(product.stock);
+                const stockText = getStockText(product.stock);
+                const totalValue = (product.stock * product.price).toFixed(2);
+                
+                const row = document.createElement('tr');
+                row.className = getStockRowClass(product.stock);
+                row.innerHTML = `
+                    <td class="col-code">${product.code}</td>
+                    <td class="col-name">${product.name}</td>
+                    <td class="col-category">${product.category}</td>
+                    <td class="col-stock">
+                        <span class="stock-badge ${stockClass}">${product.stock} ${stockText}</span>
+                    </td>
+                    <td class="col-price">$${product.price.toFixed(2)}</td>
+                    <td class="col-value">$${totalValue}</td>
+                    <td class="col-actions">
+                        <button class="action-btn edit-btn" data-id="${product.id}" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete-btn" data-id="${product.id}" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Agregar eventos a los botones
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = parseInt(this.dataset.id);
+                    editProduct(productId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = parseInt(this.dataset.id);
+                    deleteProduct(productId);
+                });
+            });
+            
+            // Agregar evento de clic a las filas para mostrar detalles
+            document.querySelectorAll('#inventoryTableBody tr').forEach(row => {
+                row.addEventListener('click', function() {
+                    const productId = parseInt(this.querySelector('.edit-btn').dataset.id);
+                    showProductDetails(productId);
+                });
+            });
+        }
+
+        // ========== ACTUALIZAR INTERFAZ DEL INVENTARIO ==========
+        function updateInventoryUI() {
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const stockFilter = document.getElementById('stockFilter').value;
+            
+            let filteredProducts = [...inventory];
+            
+            // Filtrar por categoría
+            if (categoryFilter) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.category === categoryFilter
+                );
+            }
+            
+            // Filtrar por stock
+            if (stockFilter) {
+                filteredProducts = filteredProducts.filter(product => {
+                    if (stockFilter === 'high' && product.stock > 50) return true;
+                    if (stockFilter === 'medium' && product.stock >= 20 && product.stock <= 50) return true;
+                    if (stockFilter === 'low' && product.stock > 0 && product.stock < 20) return true;
+                    if (stockFilter === 'out' && product.stock === 0) return true;
+                    return false;
+                });
+            }
+            
+            // Mostrar productos filtrados
+            displayInventory(filteredProducts);
+            
+            // Actualizar contador
+            document.getElementById('itemCount').textContent = `${filteredProducts.length} producto${filteredProducts.length !== 1 ? 's' : ''}`;
+            
+            // Actualizar estadísticas
+            updateStatistics();
+        }
+
+        // ========== ACTUALIZAR ESTADÍSTICAS ==========
+        function updateStatistics() {
+            const totalProducts = inventory.length;
+            let totalValue = 0;
+            let highStock = 0;
+            let mediumStock = 0;
+            let lowStock = 0;
+            let outStock = 0;
+            
+            inventory.forEach(product => {
+                totalValue += product.stock * product.price;
+                
+                if (product.stock > 50) highStock++;
+                else if (product.stock >= 20 && product.stock <= 50) mediumStock++;
+                else if (product.stock > 0 && product.stock < 20) lowStock++;
+                else if (product.stock === 0) outStock++;
+            });
+            
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
+            document.getElementById('highStock').textContent = highStock;
+            document.getElementById('mediumStock').textContent = mediumStock;
+            document.getElementById('lowStock').textContent = lowStock;
+            document.getElementById('outStock').textContent = outStock;
+        }
+
+        // ========== MOSTRAR DETALLES DEL PRODUCTO ==========
+        function showProductDetails(productId) {
+            const product = inventory.find(p => p.id === productId);
+            if (!product) return;
+            
+            selectedProduct = product;
+            const totalValue = (product.stock * product.price).toFixed(2);
+            const stockClass = getStockClass(product.stock);
+            const stockText = getStockText(product.stock);
+            
+            document.getElementById('productDetails').innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">Código:</span>
+                    <span class="info-value">${product.code}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Nombre:</span>
+                    <span class="info-value">${product.name}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Categoría:</span>
+                    <span class="info-value">${product.category}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Stock actual:</span>
+                    <span class="info-value">
+                        <span class="stock-badge ${stockClass}">${product.stock} ${stockText}</span>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Precio unitario:</span>
+                    <span class="info-value">$${product.price.toFixed(2)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Valor total:</span>
+                    <span class="info-value">$${totalValue}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Última actualización:</span>
+                    <span class="info-value">Hoy</span>
+                </div>
+                
+                <div style="margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #ddd;">
+                    <button class="action-btn edit-btn" onclick="editProduct(${product.id})" style="width: 100%; justify-content: center;">
+                        <i class="fas fa-edit"></i> Editar Producto
+                    </button>
+                </div>
+            `;
+        }
+
+        // ========== ABRIR MODAL DE PRODUCTO ==========
+        function openProductModal(productId = null) {
+            const modal = document.getElementById('productModal');
+            const title = document.getElementById('modalProductTitle');
+            
+            if (productId) {
+                // Modo edición
+                const product = inventory.find(p => p.id === productId);
+                if (product) {
+                    title.textContent = 'Editar Producto';
+                    document.getElementById('productCode').value = product.code;
+                    document.getElementById('productName').value = product.name;
+                    document.getElementById('productCategory').value = product.category;
+                    document.getElementById('productStock').value = product.stock;
+                    document.getElementById('productPrice').value = product.price;
+                    editingProductId = productId;
+                }
+            } else {
+                // Modo nuevo
+                title.textContent = 'Nuevo Producto';
+                document.getElementById('productForm').reset();
+                editingProductId = null;
+            }
+            
+            modal.style.display = 'flex';
+            document.getElementById('productCode').focus();
+        }
+
+        // ========== CERRAR MODAL DE PRODUCTO ==========
+        function closeProductModal() {
+            document.getElementById('productModal').style.display = 'none';
+            editingProductId = null;
+        }
+
+        // ========== GUARDAR PRODUCTO ==========
+        function saveProduct(e) {
+            e.preventDefault();
+            
+            const code = document.getElementById('productCode').value.trim().toUpperCase();
+            const name = document.getElementById('productName').value.trim();
+            const category = document.getElementById('productCategory').value;
+            const stock = parseInt(document.getElementById('productStock').value) || 0;
+            const price = parseFloat(document.getElementById('productPrice').value) || 0;
+            
+            // Validaciones
+            if (!code || !name) {
+                showNotification('Código y nombre son obligatorios', 'error');
+                return;
+            }
+            
+            if (stock < 0) {
+                showNotification('El stock no puede ser negativo', 'error');
+                return;
+            }
+            
+            if (price < 0) {
+                showNotification('El precio no puede ser negativo', 'error');
+                return;
+            }
+            
+            if (editingProductId) {
+                // Editar producto existente
+                const index = inventory.findIndex(p => p.id === editingProductId);
+                if (index !== -1) {
+                    inventory[index] = {
+                        ...inventory[index],
+                        code,
+                        name,
+                        category,
+                        stock,
+                        price
+                    };
+                    showNotification('Producto actualizado correctamente', 'success');
+                }
+            } else {
+                // Nuevo producto
+                // Verificar si el código ya existe
+                if (inventory.some(p => p.code === code)) {
+                    showNotification('El código ya existe', 'error');
+                    return;
+                }
+                
+                const newId = inventory.length > 0 ? Math.max(...inventory.map(p => p.id)) + 1 : 1;
+                inventory.push({
+                    id: newId,
+                    code,
+                    name,
+                    category,
+                    stock,
+                    price
+                });
+                showNotification('Producto agregado correctamente', 'success');
+            }
+            
+            // Guardar y actualizar
+            saveInventory();
+            updateInventoryUI();
+            closeProductModal();
+            
+            // Si hay un producto seleccionado, actualizar sus detalles
+            if (selectedProduct && editingProductId === selectedProduct.id) {
+                showProductDetails(selectedProduct.id);
+            }
+        }
+
+        // ========== EDITAR PRODUCTO ==========
+        function editProduct(productId) {
+            openProductModal(productId);
+        }
+
+        // ========== ELIMINAR PRODUCTO ==========
+        function deleteProduct(productId) {
+            if (confirm('¿Estás seguro de eliminar este producto?')) {
+                const index = inventory.findIndex(p => p.id === productId);
+                if (index !== -1) {
+                    inventory.splice(index, 1);
+                    saveInventory();
+                    updateInventoryUI();
+                    showNotification('Producto eliminado', 'warning');
+                    
+                    // Limpiar detalles si el producto eliminado era el seleccionado
+                    if (selectedProduct && selectedProduct.id === productId) {
+                        document.getElementById('productDetails').innerHTML = `
+                            <p class="text-muted" style="font-size: 0.7rem; text-align: center; padding: 1rem;">
+                                <i class="fas fa-mouse-pointer fa-lg mb-2"></i><br>
+                                Selecciona un producto para ver sus detalles
+                            </p>
+                        `;
+                        selectedProduct = null;
+                    }
+                }
+            }
+        }
+
+        // ========== LIMPIAR FILTROS ==========
+        function clearFilters() {
+            document.getElementById('searchInventory').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('stockFilter').value = '';
+            updateInventoryUI();
+            showNotification('Filtros limpiados', 'info');
+        }
+
+        // ========== AJUSTAR STOCK ==========
+        function adjustStock() {
+            if (!selectedProduct) {
+                showNotification('Selecciona un producto primero', 'warning');
+                return;
+            }
+            
+            const newStock = prompt(`Ajustar stock de ${selectedProduct.name}\nStock actual: ${selectedProduct.stock}\nIngresa el nuevo stock:`, selectedProduct.stock);
+            
+            if (newStock !== null) {
+                const stockValue = parseInt(newStock);
+                if (!isNaN(stockValue) && stockValue >= 0) {
+                    selectedProduct.stock = stockValue;
+                    saveInventory();
+                    updateInventoryUI();
+                    showProductDetails(selectedProduct.id);
+                    showNotification('Stock actualizado', 'success');
+                } else {
+                    showNotification('Stock inválido', 'error');
+                }
+            }
+        }
+
+        // ========== GENERAR REPORTE ==========
+        function generateReport() {
+            showNotification('Generando reporte...', 'info');
+            
+            // Simular generación de reporte
+            setTimeout(() => {
+                // En una implementación real, aquí se generaría un PDF o Excel
+                const reportData = {
+                    fecha: new Date().toLocaleDateString(),
+                    totalProductos: inventory.length,
+                    valorTotal: inventory.reduce((sum, p) => sum + (p.stock * p.price), 0).toFixed(2),
+                    productosBajoStock: inventory.filter(p => p.stock < 20).length,
+                    productosSinStock: inventory.filter(p => p.stock === 0).length
+                };
+                
+                alert(`Reporte generado:\n\n` +
+                      `Fecha: ${reportData.fecha}\n` +
+                      `Total productos: ${reportData.totalProductos}\n` +
+                      `Valor total: $${reportData.valorTotal}\n` +
+                      `Productos con bajo stock: ${reportData.productosBajoStock}\n` +
+                      `Productos sin stock: ${reportData.productosSinStock}`);
+                
+                showNotification('Reporte listo para descargar', 'success');
+            }, 1000);
+        }
+
+        // ========== MOSTRAR ALERTAS DE BAJO STOCK ==========
+        function showLowStockAlerts() {
+            const lowStockProducts = inventory.filter(p => p.stock < 20 && p.stock > 0);
+            const outStockProducts = inventory.filter(p => p.stock === 0);
+            
+            if (lowStockProducts.length === 0 && outStockProducts.length === 0) {
+                showNotification('Todo el stock está en buen nivel', 'info');
+                return;
+            }
+            
+            let message = 'ALERTAS DE STOCK:\n\n';
+            
+            if (outStockProducts.length > 0) {
+                message += `PRODUCTOS SIN STOCK (${outStockProducts.length}):\n`;
+                outStockProducts.forEach(p => {
+                    message += `• ${p.code} - ${p.name}\n`;
+                });
+                message += '\n';
+            }
+            
+            if (lowStockProducts.length > 0) {
+                message += `PRODUCTOS CON STOCK BAJO (${lowStockProducts.length}):\n`;
+                lowStockProducts.forEach(p => {
+                    message += `• ${p.code} - ${p.name} (Stock: ${p.stock})\n`;
+                });
+            }
+            
+            alert(message);
+        }
+
+        // ========== EXPORTAR INVENTARIO ==========
+        function exportInventory() {
+            showNotification('Exportando inventario...', 'info');
+            
+            // Simular exportación
+            setTimeout(() => {
+                const csvContent = "Código,Nombre,Categoría,Stock,Precio,Valor\n" +
+                    inventory.map(p => 
+                        `${p.code},${p.name},${p.category},${p.stock},${p.price},${(p.stock * p.price).toFixed(2)}`
+                    ).join("\n");
+                
+                // Crear blob y descargar
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `inventario_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                showNotification('Inventario exportado correctamente', 'success');
+            }, 500);
+        }
+
+        // ========== FUNCIONES AUXILIARES ==========
+        function getStockClass(stock) {
+            if (stock > 50) return 'stock-high';
+            if (stock >= 20 && stock <= 50) return 'stock-medium';
+            if (stock > 0 && stock < 20) return 'stock-low';
+            return 'stock-out';
+        }
+
+        function getStockText(stock) {
+            if (stock > 50) return '(Alto)';
+            if (stock >= 20 && stock <= 50) return '(Medio)';
+            if (stock > 0 && stock < 20) return '(Bajo)';
+            return '(Sin stock)';
+        }
+
+        function getStockRowClass(stock) {
+            if (stock > 0 && stock < 20) return 'low-stock';
+            if (stock === 0) return 'out-of-stock';
+            return '';
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'success' ? '#2ecc71' : 
+                                           type === 'error' ? '#e74c3c' : 
+                                           type === 'warning' ? '#f39c12' : '#3498db';
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

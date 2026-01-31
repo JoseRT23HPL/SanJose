@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Ventas - Ferretería San José</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            height: 100vh;
+            overflow: hidden;
+            font-size: 12px;
+        }
+
+        /* Contenedor principal ultra compacto */
+        .main-container {
+            margin-top: 50px;
+            padding: 0.5rem;
+            height: calc(100vh - 50px);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        /* Encabezado de la página */
+        .page-header {
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            color: #2c3e50;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        /* Controles de búsqueda y filtros */
+        .controls-section {
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            align-items: center;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-input-group {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .search-input::placeholder {
+            color: #95a5a6;
+            font-size: 0.75rem;
+        }
+
+        .search-input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 1px rgba(52, 152, 219, 0.1);
+            outline: none;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 2px;
+            padding: 0.25rem 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+
+        .search-btn:hover {
+            background: #2980b9;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.75rem;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            min-width: 120px;
+        }
+
+        .date-input {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.75rem;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            min-width: 120px;
+        }
+
+        /* Área principal de historial */
+        .history-area {
+            flex: 1;
+            display: flex;
+            gap: 0.6rem;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* Tabla de ventas */
+        .sales-section {
+            flex: 3;
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .sales-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .total-sales {
+            background: #3498db;
+            color: white;
+            padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Tabla de ventas */
+        .table-container {
+            flex: 1;
+            overflow: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .sales-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .sales-table thead {
+            background: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .sales-table th {
+            padding: 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #e0e0e0;
+            white-space: nowrap;
+        }
+
+        .sales-table td {
+            padding: 0.4rem 0.5rem;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .sales-table tbody tr:hover {
+            background-color: #f8fafd;
+        }
+
+        .sales-table tbody tr.cancelled {
+            background-color: #f8d7da;
+            opacity: 0.7;
+        }
+
+        /* Columnas específicas */
+        .col-id {
+            width: 60px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .col-date {
+            width: 120px;
+        }
+
+        .col-time {
+            width: 80px;
+        }
+
+        .col-customer {
+            min-width: 120px;
+        }
+
+        .col-items {
+            width: 70px;
+            text-align: center;
+        }
+
+        .col-amount {
+            width: 100px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .col-payment {
+            width: 100px;
+            text-align: center;
+        }
+
+        .col-user {
+            width: 100px;
+        }
+
+        .col-status {
+            width: 90px;
+            text-align: center;
+        }
+
+        .col-actions {
+            width: 80px;
+            text-align: center;
+        }
+
+        /* Estados de venta */
+        .status-badge {
+            padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-refunded {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        /* Métodos de pago */
+        .payment-badge {
+            padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .payment-cash {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .payment-transfer {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .payment-card {
+            background: #e2d9f3;
+            color: #4a2a8c;
+        }
+
+        .payment-mixed {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* Botones de acción */
+        .action-btn {
+            padding: 0.2rem 0.4rem;
+            border: none;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .action-btn.view-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-btn.view-btn:hover {
+            background: #2980b9;
+        }
+
+        .action-btn.reprint-btn {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .action-btn.reprint-btn:hover {
+            background: #27ae60;
+        }
+
+        .action-btn.cancel-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .action-btn.cancel-btn:hover {
+            background: #c0392b;
+        }
+
+        .action-btn.export-btn {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .action-btn.export-btn:hover {
+            background: #8e44ad;
+        }
+
+        /* Panel de resumen */
+        .summary-section {
+            flex: 1;
+            background: white;
+            border-radius: 5px;
+            padding: 0.6rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            min-width: 320px;
+            max-width: 380px;
+        }
+
+        .summary-header {
+            margin-bottom: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        .summary-title {
+            color: #2c3e50;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        /* Estadísticas de ventas */
+        .stats-container {
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.4rem;
+            font-size: 0.75rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .stat-value.total {
+            color: #2ecc71;
+            font-size: 0.85rem;
+        }
+
+        .stat-value.highlight {
+            color: #3498db;
+        }
+
+        /* Gráfico simple */
+        .chart-container {
+            background: white;
+            border-radius: 4px;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            border: 1px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        .chart-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .simple-chart {
+            height: 100px;
+            display: flex;
+            align-items: flex-end;
+            gap: 0.3rem;
+            padding: 0.5rem 0;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: #3498db;
+            border-radius: 2px;
+            position: relative;
+            min-height: 2px;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+        }
+
+        .chart-label {
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.6rem;
+            color: #7f8c8d;
+        }
+
+        /* Acciones rápidas */
+        .quick-actions {
+            margin-bottom: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .actions-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .action-button {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        .action-button.primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .action-button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .action-button.success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .action-button.success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(46, 204, 113, 0.1);
+        }
+
+        .action-button.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .action-button.warning:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(243, 156, 18, 0.1);
+        }
+
+        .action-button.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .action-button.danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .action-button.purple {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+
+        .action-button.purple:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px rgba(155, 89, 182, 0.1);
+        }
+
+        /* Panel de detalles de venta */
+        .sale-details {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 0.8rem;
+            border: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+
+        .details-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.6rem;
+            font-size: 0.8rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .sale-info {
+            font-size: 0.75rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #7f8c8d;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* Lista de productos en venta */
+        .products-list {
+            margin-top: 0.5rem;
+            border-top: 1px solid #ddd;
+            padding-top: 0.5rem;
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.2rem;
+            font-size: 0.7rem;
+            padding: 0.2rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-qty {
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .product-name {
+            flex: 1;
+            margin: 0 0.5rem;
+        }
+
+        .product-total {
+            font-weight: 600;
+        }
+
+        /* Notificaciones */
+        #notification {
+            display: none;
+            position: fixed;
+            top: 55px;
+            right: 8px;
+            background: #2ecc71;
+            color: white;
+            padding: 0.4rem 0.6rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            z-index: 1001;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Scrollbar personalizado */
+        .table-container::-webkit-scrollbar,
+        .sale-details::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-track,
+        .sale-details::-webkit-scrollbar-track {
+            background: #f8f9fa;
+            border-radius: 2px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb,
+        .sale-details::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 2px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .history-area {
+                flex-direction: column;
+            }
+            
+            .summary-section {
+                min-width: auto;
+                max-width: none;
+                max-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin-top: 45px;
+                padding: 0.4rem;
+                height: calc(100vh - 45px);
+                gap: 0.4rem;
+            }
+            
+            .controls-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-container {
+                min-width: 100%;
+            }
+            
+            .filter-container {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .sales-section, .summary-section {
+                padding: 0.5rem;
+            }
+            
+            .sales-table {
+                font-size: 0.7rem;
+            }
+            
+            .col-time, .col-user, .col-status {
+                display: none;
+            }
+        }
+
+        /* Animaciones */
+        @keyframes modalAppear {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Estilo para días de la semana */
+        .day-label {
+            font-size: 0.6rem;
+            color: #7f8c8d;
+            text-align: center;
+            margin-top: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cargar encabezado -->
+    <div id="header-container"></div>
+
+    <!-- Notificaciones -->
+    <div id="notification"></div>
+
+    <!-- Contenedor principal -->
+    <div class="main-container">
+        <!-- Encabezado de página -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-history text-purple me-2"></i>
+                HISTORIAL DE VENTAS
+            </h1>
+            <div class="header-actions">
+                <button class="action-button purple" id="exportAllBtn">
+                    <i class="fas fa-file-export"></i>
+                    Exportar Todo
+                </button>
+                <button class="action-button primary" id="filterBtn">
+                    <i class="fas fa-filter"></i>
+                    Filtros Avanzados
+                </button>
+                <button class="action-button success" id="todayBtn">
+                    <i class="fas fa-calendar-day"></i>
+                    Hoy
+                </button>
+            </div>
+        </div>
+
+        <!-- Controles de búsqueda y filtros -->
+        <div class="controls-section">
+            <div class="search-container">
+                <div class="search-input-group">
+                    <input type="text" 
+                           id="searchSales" 
+                           class="search-input" 
+                           placeholder="Buscar venta por ID, cliente, vendedor o producto..."
+                           autofocus>
+                    <button id="searchSalesBtn" class="search-btn">
+                        <i class="fas fa-search me-1"></i> BUSCAR
+                    </button>
+                </div>
+            </div>
+            
+            <div class="filter-container">
+                <input type="date" 
+                       id="dateFrom" 
+                       class="date-input" 
+                       value="<?php echo date('Y-m-d', strtotime('-7 days')); ?>">
+                <span style="font-size: 0.75rem; color: #7f8c8d;">a</span>
+                <input type="date" 
+                       id="dateTo" 
+                       class="date-input" 
+                       value="<?php echo date('Y-m-d'); ?>">
+                
+                <select id="userFilter" class="filter-select">
+                    <option value="">Todos los vendedores</option>
+                    <option value="Juan">Juan</option>
+                    <option value="María">María</option>
+                    <option value="Pedro">Pedro</option>
+                    <option value="Ana">Ana</option>
+                </select>
+                
+                <select id="paymentFilter" class="filter-select">
+                    <option value="">Todos los pagos</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Mixto">Mixto</option>
+                </select>
+                
+                <select id="statusFilter" class="filter-select">
+                    <option value="">Todos los estados</option>
+                    <option value="Completada">Completada</option>
+                    <option value="Cancelada">Cancelada</option>
+                    <option value="Pendiente">Pendiente</option>
+                </select>
+                
+                <button id="clearFiltersBtn" class="action-button danger" style="padding: 0.4rem 0.6rem;">
+                    <i class="fas fa-times"></i>
+                    Limpiar
+                </button>
+            </div>
+        </div>
+
+        <!-- Área principal de historial -->
+        <div class="history-area">
+            <!-- Tabla de ventas -->
+            <div class="sales-section">
+                <div class="sales-header">
+                    <h2 class="section-title">REGISTRO DE VENTAS</h2>
+                    <div class="total-sales" id="totalSales">0 ventas</div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="sales-table">
+                        <thead>
+                            <tr>
+                                <th class="col-id">ID VENTA</th>
+                                <th class="col-date">FECHA</th>
+                                <th class="col-time">HORA</th>
+                                <th class="col-customer">CLIENTE / VENDEDOR</th>
+                                <th class="col-items">PRODUCTOS</th>
+                                <th class="col-amount">TOTAL</th>
+                                <th class="col-payment">PAGO</th>
+                                <th class="col-user">VENDEDOR</th>
+                                <th class="col-status">ESTADO</th>
+                                <th class="col-actions">ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesTableBody">
+                            <!-- Las ventas se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Panel de resumen y detalles -->
+            <div class="summary-section">
+                <div class="summary-header">
+                    <h2 class="summary-title">RESUMEN Y DETALLES</h2>
+                </div>
+                
+                <!-- Estadísticas -->
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span>Ventas totales:</span>
+                        <span class="stat-value" id="totalSalesCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Total vendido:</span>
+                        <span class="stat-value total" id="totalSalesAmount">$0.00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Efectivo:</span>
+                        <span class="stat-value" id="totalCash">$0.00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Transferencias:</span>
+                        <span class="stat-value" id="totalTransfer">$0.00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Ventas canceladas:</span>
+                        <span class="stat-value" id="cancelledSales">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Promedio por venta:</span>
+                        <span class="stat-value highlight" id="averageSale">$0.00</span>
+                    </div>
+                </div>
+                
+                <!-- Gráfico simple -->
+                <div class="chart-container">
+                    <h5 class="chart-title">VENTAS DE LA SEMANA</h5>
+                    <div class="simple-chart" id="weeklyChart">
+                        <!-- Gráfico se generará dinámicamente -->
+                    </div>
+                    <div class="day-label">Lun Mar Mié Jue Vie Sáb Dom</div>
+                </div>
+                
+                <!-- Acciones rápidas -->
+                <div class="quick-actions">
+                    <h5 class="actions-title">ACCIONES RÁPIDAS</h5>
+                    <div class="action-buttons">
+                        <button class="action-button primary" id="printReportBtn">
+                            <i class="fas fa-print"></i>
+                            Imprimir Reporte
+                        </button>
+                        <button class="action-button success" id="dailySummaryBtn">
+                            <i class="fas fa-chart-bar"></i>
+                            Resumen Diario
+                        </button>
+                        <button class="action-button warning" id="topProductsBtn">
+                            <i class="fas fa-star"></i>
+                            Productos Más Vendidos
+                        </button>
+                        <button class="action-button purple" id="employeeReportBtn">
+                            <i class="fas fa-user-tie"></i>
+                            Reporte por Empleado
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Detalles de la venta seleccionada -->
+                <div class="sale-details">
+                    <h5 class="details-title">DETALLES DE LA VENTA</h5>
+                    <div class="sale-info" id="saleDetails">
+                        <p class="text-muted" style="font-size: 0.7rem; text-align: center; padding: 1rem;">
+                            <i class="fas fa-mouse-pointer fa-lg mb-2"></i><br>
+                            Selecciona una venta para ver sus detalles
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para filtros avanzados -->
+    <div id="filterModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 2000;">
+        <div class="modal-content" style="background: white; border-radius: 6px; padding: 1rem; width: 90%; max-width: 400px; animation: modalAppear 0.15s ease;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f1f1f1;">
+                <h2 class="modal-title" style="font-size: 0.9rem; color: #2c3e50; display: flex; align-items: center; gap: 0.4rem;">
+                    <i class="fas fa-filter"></i>
+                    Filtros Avanzados
+                </h2>
+                <button class="close-modal" id="closeFilterModal" style="background: none; border: none; font-size: 1rem; color: #7f8c8d; cursor: pointer; padding: 0.25rem; border-radius: 50%;">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="filterForm">
+                    <div class="form-group mb-2">
+                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Rango de Montos</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="number" 
+                                   id="minAmount" 
+                                   class="form-control" 
+                                   placeholder="Mínimo"
+                                   min="0"
+                                   step="0.01"
+                                   style="flex: 1; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;">
+                            <input type="number" 
+                                   id="maxAmount" 
+                                   class="form-control" 
+                                   placeholder="Máximo"
+                                   min="0"
+                                   step="0.01"
+                                   style="flex: 1; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Cantidad de Productos</label>
+                        <select id="productCountFilter" 
+                                class="form-control" 
+                                style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;">
+                            <option value="">Cualquier cantidad</option>
+                            <option value="1-5">1-5 productos</option>
+                            <option value="6-10">6-10 productos</option>
+                            <option value="11-20">11-20 productos</option>
+                            <option value="21+">Más de 20 productos</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Período de Tiempo</label>
+                        <select id="timePeriodFilter" 
+                                class="form-control" 
+                                style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;">
+                            <option value="today">Hoy</option>
+                            <option value="yesterday">Ayer</option>
+                            <option value="thisWeek">Esta semana</option>
+                            <option value="lastWeek">Semana pasada</option>
+                            <option value="thisMonth">Este mes</option>
+                            <option value="lastMonth">Mes pasado</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label style="display: block; margin-bottom: 0.25rem; font-weight: 600; color: #2c3e50; font-size: 0.75rem;">Ordenar por</label>
+                        <select id="sortByFilter" 
+                                class="form-control" 
+                                style="width: 100%; padding: 0.4rem; border: 1px solid #e0e0e0; border-radius: 3px; font-size: 0.8rem;">
+                            <option value="date_desc">Fecha (más reciente primero)</option>
+                            <option value="date_asc">Fecha (más antigua primero)</option>
+                            <option value="amount_desc">Monto (mayor a menor)</option>
+                            <option value="amount_asc">Monto (menor a mayor)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="modal-actions" style="display: flex; gap: 0.4rem; margin-top: 1rem;">
+                        <button type="button" class="modal-btn modal-btn-secondary" id="cancelFilterBtn" style="flex: 1; padding: 0.4rem; background: #f8f9fa; color: #2c3e50; border: none; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" class="modal-btn modal-btn-primary" id="applyFilterBtn" style="flex: 1; padding: 0.4rem; background: #3498db; color: white; border: none; border-radius: 3px; font-size: 0.75rem; cursor: pointer;">
+                            <i class="fas fa-check"></i> Aplicar Filtros
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // ========== CONFIGURACIÓN ==========
+        let salesHistory = [];
+        let selectedSale = null;
+        let currentFilters = {};
+
+        // Datos iniciales de ejemplo
+        const initialSales = [
+            { 
+                id: 'V-2023-00123', 
+                date: '2023-10-15', 
+                time: '09:15', 
+                customer: 'Cliente General', 
+                seller: 'Juan', 
+                items: 3, 
+                total: 1250.75, 
+                payment: 'Efectivo', 
+                status: 'Completada',
+                products: [
+                    { name: 'Martillo 16oz Truper', qty: 1, price: 289.50, total: 289.50 },
+                    { name: 'Cemento Gris 50kg', qty: 2, price: 285.00, total: 570.00 },
+                    { name: 'Clavos 3" x 1kg', qty: 1, price: 32.00, total: 32.00 }
+                ],
+                subtotal: 891.50,
+                tax: 133.73,
+                discount: 0,
+                notes: 'Venta rápida en mostrador'
+            },
+            { 
+                id: 'V-2023-00124', 
+                date: '2023-10-15', 
+                time: '10:30', 
+                customer: 'Constructora Díaz', 
+                seller: 'María', 
+                items: 5, 
+                total: 3250.25, 
+                payment: 'Transferencia', 
+                status: 'Completada',
+                products: [
+                    { name: 'Cemento Gris 50kg', qty: 5, price: 285.00, total: 1425.00 },
+                    { name: 'Varilla 3/8"', qty: 10, price: 85.00, total: 850.00 },
+                    { name: 'Arena M3', qty: 2, price: 350.00, total: 700.00 },
+                    { name: 'Grava M3', qty: 1, price: 320.00, total: 320.00 }
+                ],
+                subtotal: 3295.00,
+                tax: 494.25,
+                discount: 539.00,
+                notes: 'Cliente con crédito 30 días'
+            },
+            { 
+                id: 'V-2023-00125', 
+                date: '2023-10-15', 
+                time: '11:45', 
+                customer: 'Cliente General', 
+                seller: 'Pedro', 
+                items: 2, 
+                total: 550.00, 
+                payment: 'Mixto', 
+                status: 'Completada',
+                products: [
+                    { name: 'Pintura Blanca 4L', qty: 1, price: 325.00, total: 325.00 },
+                    { name: 'Brocha 4"', qty: 1, price: 68.00, total: 68.00 }
+                ],
+                subtotal: 393.00,
+                tax: 58.95,
+                discount: 0,
+                notes: '300 efectivo, 250 transferencia'
+            },
+            { 
+                id: 'V-2023-00126', 
+                date: '2023-10-14', 
+                time: '14:20', 
+                customer: 'Taller Mecánico Pérez', 
+                seller: 'Ana', 
+                items: 8, 
+                total: 1850.50, 
+                payment: 'Efectivo', 
+                status: 'Completada',
+                products: [
+                    { name: 'Taladro Percutor', qty: 1, price: 850.00, total: 850.00 },
+                    { name: 'Broca Concretera 1/2"', qty: 3, price: 45.00, total: 135.00 },
+                    { name: 'Guantes de Cuero', qty: 2, price: 125.00, total: 250.00 },
+                    { name: 'Cinta Aislante', qty: 2, price: 22.50, total: 45.00 }
+                ],
+                subtotal: 1280.00,
+                tax: 192.00,
+                discount: 0,
+                notes: ''
+            },
+            { 
+                id: 'V-2023-00127', 
+                date: '2023-10-14', 
+                time: '16:10', 
+                customer: 'Cliente General', 
+                seller: 'Juan', 
+                items: 1, 
+                total: 185.00, 
+                payment: 'Efectivo', 
+                status: 'Cancelada',
+                products: [
+                    { name: 'Martillo de Uña Hermex', qty: 1, price: 185.00, total: 185.00 }
+                ],
+                subtotal: 185.00,
+                tax: 27.75,
+                discount: 0,
+                notes: 'Cliente se arrepintió, cancelación autorizada'
+            },
+            { 
+                id: 'V-2023-00128', 
+                date: '2023-10-13', 
+                time: '09:45', 
+                customer: 'Electricista Rodríguez', 
+                seller: 'María', 
+                items: 6, 
+                total: 950.25, 
+                payment: 'Transferencia', 
+                status: 'Completada',
+                products: [
+                    { name: 'Cable Cal.12 10m', qty: 2, price: 152.00, total: 304.00 },
+                    { name: 'Foco LED 12W', qty: 10, price: 35.00, total: 350.00 },
+                    { name: 'Pinzas de Electricista', qty: 1, price: 75.00, total: 75.00 }
+                ],
+                subtotal: 729.00,
+                tax: 109.35,
+                discount: 0,
+                notes: 'Factura solicitada'
+            },
+            { 
+                id: 'V-2023-00129', 
+                date: '2023-10-13', 
+                time: '12:30', 
+                customer: 'Cliente General', 
+                seller: 'Pedro', 
+                items: 4, 
+                total: 625.80, 
+                payment: 'Efectivo', 
+                status: 'Completada',
+                products: [
+                    { name: 'Desarmador Plano 1/4"', qty: 2, price: 35.80, total: 71.60 },
+                    { name: 'Desarmador Phillips #2', qty: 2, price: 42.50, total: 85.00 },
+                    { name: 'Lija para Madera', qty: 5, price: 15.00, total: 75.00 }
+                ],
+                subtotal: 231.60,
+                tax: 34.74,
+                discount: 0,
+                notes: ''
+            },
+            { 
+                id: 'V-2023-00130', 
+                date: '2023-10-12', 
+                time: '15:15', 
+                customer: 'Fontanería López', 
+                seller: 'Ana', 
+                items: 3, 
+                total: 850.00, 
+                payment: 'Mixto', 
+                status: 'Pendiente',
+                products: [
+                    { name: 'Tubo PVC 1/2" x 3m', qty: 5, price: 85.00, total: 425.00 },
+                    { name: 'Codo PVC 1/2"', qty: 10, price: 8.50, total: 85.00 }
+                ],
+                subtotal: 510.00,
+                tax: 76.50,
+                discount: 0,
+                notes: 'Pendiente de entrega'
+            },
+            { 
+                id: 'V-2023-00131', 
+                date: '2023-10-11', 
+                time: '10:00', 
+                customer: 'Cliente General', 
+                seller: 'Juan', 
+                items: 2, 
+                total: 420.00, 
+                payment: 'Efectivo', 
+                status: 'Completada',
+                products: [
+                    { name: 'Sierra de Arco', qty: 1, price: 420.00, total: 420.00 }
+                ],
+                subtotal: 420.00,
+                tax: 63.00,
+                discount: 0,
+                notes: 'Venta con garantía'
+            },
+            { 
+                id: 'V-2023-00132', 
+                date: '2023-10-10', 
+                time: '17:30', 
+                customer: 'Constructora Díaz', 
+                seller: 'María', 
+                items: 12, 
+                total: 5250.00, 
+                payment: 'Transferencia', 
+                status: 'Completada',
+                products: [
+                    { name: 'Cemento Gris 50kg', qty: 10, price: 285.00, total: 2850.00 },
+                    { name: 'Pintura Blanca 4L', qty: 3, price: 325.00, total: 975.00 },
+                    { name: 'Clavos 2" x 1kg', qty: 5, price: 28.50, total: 142.50 }
+                ],
+                subtotal: 3967.50,
+                tax: 595.13,
+                discount: 0,
+                notes: 'Pedido especial para obra'
+            }
+        ];
+
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar encabezado
+            loadHeader();
+            
+            // Cargar historial desde localStorage o usar datos iniciales
+            loadSalesHistory();
+            
+            // Configurar eventos
+            setupEventListeners();
+            
+            // Mostrar historial
+            updateSalesUI();
+            
+            // Generar gráfico de la semana
+            generateWeeklyChart();
+            
+            // Poner foco en búsqueda
+            document.getElementById('searchSales').focus();
+        });
+
+        // ========== CARGAR ENCABEZADO ==========
+        function loadHeader() {
+            fetch('encabezado.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                    
+                    // Marcar vista activa en el menú
+                    setTimeout(() => {
+                        setActiveView('Historial de Ventas');
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error cargando el encabezado:', error);
+                    // Cargar encabezado simple si falla
+                    document.getElementById('header-container').innerHTML = `
+                        <header class="main-header" style="background: white; padding: 0.25rem 0.5rem; height: 50px;">
+                            <div class="logo-container">
+                                <div class="logo-icon"><i class="fas fa-tools"></i></div>
+                                <div>
+                                    <div class="logo-text">Ferretería San José</div>
+                                    <small class="text-muted">HISTORIAL DE VENTAS</small>
+                                </div>
+                            </div>
+                            <button onclick="window.location.href='ventas.html'" class="btn btn-sm btn-outline-primary me-2">
+                                <i class="fas fa-cash-register"></i> Nueva Venta
+                            </button>
+                        </header>
+                    `;
+                });
+        }
+
+        // Función para marcar vista activa
+        function setActiveView(viewName) {
+            try {
+                document.querySelectorAll('.dropdown-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Encontrar y marcar como activo el item correspondiente
+                document.querySelectorAll('.dropdown-item').forEach(item => {
+                    if (item.textContent.includes(viewName)) {
+                        item.classList.add('active');
+                    }
+                });
+            } catch (e) {
+                console.log('No se pudo marcar vista activa:', e);
+            }
+        }
+
+        // ========== CARGAR HISTORIAL DE VENTAS ==========
+        function loadSalesHistory() {
+            const savedSales = localStorage.getItem('ferreteriaSalesHistory');
+            if (savedSales) {
+                salesHistory = JSON.parse(savedSales);
+            } else {
+                // Usar datos iniciales
+                salesHistory = [...initialSales];
+                saveSalesHistory();
+            }
+        }
+
+        // ========== GUARDAR HISTORIAL DE VENTAS ==========
+        function saveSalesHistory() {
+            localStorage.setItem('ferreteriaSalesHistory', JSON.stringify(salesHistory));
+        }
+
+        // ========== CONFIGURAR EVENTOS ==========
+        function setupEventListeners() {
+            // Búsqueda
+            document.getElementById('searchSales').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchSales(this.value.trim());
+                }
+            });
+            
+            document.getElementById('searchSalesBtn').addEventListener('click', function() {
+                const searchTerm = document.getElementById('searchSales').value.trim();
+                searchSales(searchTerm);
+            });
+            
+            // Filtros
+            document.getElementById('dateFrom').addEventListener('change', updateSalesUI);
+            document.getElementById('dateTo').addEventListener('change', updateSalesUI);
+            document.getElementById('userFilter').addEventListener('change', updateSalesUI);
+            document.getElementById('paymentFilter').addEventListener('change', updateSalesUI);
+            document.getElementById('statusFilter').addEventListener('change', updateSalesUI);
+            document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
+            
+            // Botones de acción
+            document.getElementById('filterBtn').addEventListener('click', openFilterModal);
+            document.getElementById('todayBtn').addEventListener('click', showTodaySales);
+            document.getElementById('exportAllBtn').addEventListener('click', exportAllSales);
+            document.getElementById('printReportBtn').addEventListener('click', printReport);
+            document.getElementById('dailySummaryBtn').addEventListener('click', showDailySummary);
+            document.getElementById('topProductsBtn').addEventListener('click', showTopProducts);
+            document.getElementById('employeeReportBtn').addEventListener('click', showEmployeeReport);
+            
+            // Modal de filtros
+            document.getElementById('closeFilterModal').addEventListener('click', closeFilterModal);
+            document.getElementById('cancelFilterBtn').addEventListener('click', closeFilterModal);
+            document.getElementById('filterForm').addEventListener('submit', applyAdvancedFilters);
+        }
+
+        // ========== BUSCAR VENTAS ==========
+        function searchSales(searchTerm) {
+            if (!searchTerm) {
+                updateSalesUI();
+                return;
+            }
+            
+            const searchLower = searchTerm.toLowerCase();
+            const filtered = salesHistory.filter(sale => 
+                sale.id.toLowerCase().includes(searchLower) ||
+                sale.customer.toLowerCase().includes(searchLower) ||
+                sale.seller.toLowerCase().includes(searchLower) ||
+                sale.products.some(p => p.name.toLowerCase().includes(searchLower))
+            );
+            
+            displaySales(filtered);
+            
+            // Mostrar mensaje si no hay resultados
+            if (filtered.length === 0) {
+                document.getElementById('salesTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+                            <i class="fas fa-search fa-lg mb-2"></i><br>
+                            No se encontraron ventas para "${searchTerm}"
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // ========== MOSTRAR VENTAS ==========
+        function displaySales(salesList) {
+            const tbody = document.getElementById('salesTableBody');
+            tbody.innerHTML = '';
+            
+            salesList.forEach(sale => {
+                const statusClass = getStatusClass(sale.status);
+                const paymentClass = getPaymentClass(sale.payment);
+                
+                const row = document.createElement('tr');
+                row.className = sale.status === 'Cancelada' ? 'cancelled' : '';
+                row.innerHTML = `
+                    <td class="col-id">${sale.id}</td>
+                    <td class="col-date">${formatDate(sale.date)}</td>
+                    <td class="col-time">${sale.time}</td>
+                    <td class="col-customer">
+                        <div style="font-weight: 600;">${sale.customer}</div>
+                        <small style="color: #7f8c8d; font-size: 0.65rem;">Vendido por: ${sale.seller}</small>
+                    </td>
+                    <td class="col-items">${sale.items}</td>
+                    <td class="col-amount">$${sale.total.toFixed(2)}</td>
+                    <td class="col-payment">
+                        <span class="payment-badge ${paymentClass}">${sale.payment}</span>
+                    </td>
+                    <td class="col-user">${sale.seller}</td>
+                    <td class="col-status">
+                        <span class="status-badge ${statusClass}">${sale.status}</span>
+                    </td>
+                    <td class="col-actions">
+                        <button class="action-btn view-btn" data-id="${sale.id}" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn reprint-btn" data-id="${sale.id}" title="Reimprimir ticket">
+                            <i class="fas fa-print"></i>
+                        </button>
+                        ${sale.status === 'Completada' ? `
+                        <button class="action-btn cancel-btn" data-id="${sale.id}" title="Cancelar venta">
+                            <i class="fas fa-ban"></i>
+                        </button>
+                        ` : ''}
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Agregar eventos a los botones
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const saleId = this.dataset.id;
+                    showSaleDetails(saleId);
+                });
+            });
+            
+            document.querySelectorAll('.reprint-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const saleId = this.dataset.id;
+                    reprintTicket(saleId);
+                });
+            });
+            
+            document.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const saleId = this.dataset.id;
+                    cancelSale(saleId);
+                });
+            });
+            
+            // Agregar evento de clic a las filas para mostrar detalles
+            document.querySelectorAll('#salesTableBody tr').forEach(row => {
+                row.addEventListener('click', function() {
+                    const saleId = this.querySelector('.view-btn')?.dataset.id;
+                    if (saleId) {
+                        showSaleDetails(saleId);
+                    }
+                });
+            });
+        }
+
+        // ========== ACTUALIZAR INTERFAZ DE VENTAS ==========
+        function updateSalesUI() {
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const userFilter = document.getElementById('userFilter').value;
+            const paymentFilter = document.getElementById('paymentFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            let filteredSales = [...salesHistory];
+            
+            // Filtrar por fecha
+            if (dateFrom && dateTo) {
+                filteredSales = filteredSales.filter(sale => 
+                    sale.date >= dateFrom && sale.date <= dateTo
+                );
+            }
+            
+            // Filtrar por vendedor
+            if (userFilter) {
+                filteredSales = filteredSales.filter(sale => 
+                    sale.seller === userFilter
+                );
+            }
+            
+            // Filtrar por método de pago
+            if (paymentFilter) {
+                filteredSales = filteredSales.filter(sale => 
+                    sale.payment === paymentFilter
+                );
+            }
+            
+            // Filtrar por estado
+            if (statusFilter) {
+                filteredSales = filteredSales.filter(sale => 
+                    sale.status === statusFilter
+                );
+            }
+            
+            // Aplicar filtros avanzados si existen
+            if (currentFilters.minAmount || currentFilters.maxAmount) {
+                filteredSales = filteredSales.filter(sale => {
+                    if (currentFilters.minAmount && sale.total < currentFilters.minAmount) return false;
+                    if (currentFilters.maxAmount && sale.total > currentFilters.maxAmount) return false;
+                    return true;
+                });
+            }
+            
+            if (currentFilters.productCount) {
+                filteredSales = filteredSales.filter(sale => {
+                    const count = sale.items;
+                    switch(currentFilters.productCount) {
+                        case '1-5': return count >= 1 && count <= 5;
+                        case '6-10': return count >= 6 && count <= 10;
+                        case '11-20': return count >= 11 && count <= 20;
+                        case '21+': return count > 20;
+                        default: return true;
+                    }
+                });
+            }
+            
+            // Ordenar
+            if (currentFilters.sortBy) {
+                filteredSales.sort((a, b) => {
+                    switch(currentFilters.sortBy) {
+                        case 'date_desc':
+                            return new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time);
+                        case 'date_asc':
+                            return new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time);
+                        case 'amount_desc':
+                            return b.total - a.total;
+                        case 'amount_asc':
+                            return a.total - b.total;
+                        default:
+                            return 0;
+                    }
+                });
+            } else {
+                // Orden por defecto: más reciente primero
+                filteredSales.sort((a, b) => 
+                    new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time)
+                );
+            }
+            
+            // Mostrar ventas filtradas
+            displaySales(filteredSales);
+            
+            // Actualizar contador
+            document.getElementById('totalSales').textContent = `${filteredSales.length} venta${filteredSales.length !== 1 ? 's' : ''}`;
+            
+            // Actualizar estadísticas
+            updateStatistics(filteredSales);
+        }
+
+        // ========== ACTUALIZAR ESTADÍSTICAS ==========
+        function updateStatistics(salesList) {
+            const totalSales = salesList.length;
+            let totalAmount = 0;
+            let totalCash = 0;
+            let totalTransfer = 0;
+            let cancelledCount = 0;
+            
+            salesList.forEach(sale => {
+                if (sale.status !== 'Cancelada') {
+                    totalAmount += sale.total;
+                    
+                    if (sale.payment === 'Efectivo' || sale.payment === 'Mixto') {
+                        totalCash += sale.total;
+                    }
+                    if (sale.payment === 'Transferencia' || sale.payment === 'Mixto') {
+                        totalTransfer += sale.total;
+                    }
+                } else {
+                    cancelledCount++;
+                }
+            });
+            
+            const averageSale = totalSales > 0 ? totalAmount / totalSales : 0;
+            
+            document.getElementById('totalSalesCount').textContent = totalSales;
+            document.getElementById('totalSalesAmount').textContent = `$${totalAmount.toFixed(2)}`;
+            document.getElementById('totalCash').textContent = `$${totalCash.toFixed(2)}`;
+            document.getElementById('totalTransfer').textContent = `$${totalTransfer.toFixed(2)}`;
+            document.getElementById('cancelledSales').textContent = cancelledCount;
+            document.getElementById('averageSale').textContent = `$${averageSale.toFixed(2)}`;
+        }
+
+        // ========== MOSTRAR DETALLES DE VENTA ==========
+        function showSaleDetails(saleId) {
+            const sale = salesHistory.find(s => s.id === saleId);
+            if (!sale) return;
+            
+            selectedSale = sale;
+            const statusClass = getStatusClass(sale.status);
+            const paymentClass = getPaymentClass(sale.payment);
+            
+            let productsHtml = '';
+            sale.products.forEach(product => {
+                productsHtml += `
+                    <div class="product-item">
+                        <span class="product-qty">${product.qty} x</span>
+                        <span class="product-name">${product.name}</span>
+                        <span class="product-total">$${product.total.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('saleDetails').innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">ID Venta:</span>
+                    <span class="info-value">${sale.id}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Fecha y Hora:</span>
+                    <span class="info-value">${formatDate(sale.date)} ${sale.time}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Cliente:</span>
+                    <span class="info-value">${sale.customer}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Vendedor:</span>
+                    <span class="info-value">${sale.seller}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Estado:</span>
+                    <span class="info-value"><span class="status-badge ${statusClass}">${sale.status}</span></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Pago:</span>
+                    <span class="info-value"><span class="payment-badge ${paymentClass}">${sale.payment}</span></span>
+                </div>
+                
+                <div class="products-list">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.3rem;">Productos (${sale.items}):</div>
+                    ${productsHtml}
+                </div>
+                
+                <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #ddd;">
+                    <div class="info-row">
+                        <span class="info-label">Subtotal:</span>
+                        <span class="info-value">$${sale.subtotal?.toFixed(2) || sale.total.toFixed(2)}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">IVA (16%):</span>
+                        <span class="info-value">$${sale.tax?.toFixed(2) || '0.00'}</span>
+                    </div>
+                    ${sale.discount ? `
+                    <div class="info-row">
+                        <span class="info-label">Descuento:</span>
+                        <span class="info-value" style="color: #e74c3c;">-$${sale.discount.toFixed(2)}</span>
+                    </div>
+                    ` : ''}
+                    <div class="info-row" style="border-top: 1px solid #ddd; padding-top: 0.3rem; margin-top: 0.3rem;">
+                        <span class="info-label">TOTAL:</span>
+                        <span class="info-value" style="font-size: 0.85rem; color: #2ecc71;">$${sale.total.toFixed(2)}</span>
+                    </div>
+                </div>
+                
+                ${sale.notes ? `
+                <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #ddd;">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.2rem;">Notas:</div>
+                    <div style="color: #7f8c8d; font-size: 0.7rem;">${sale.notes}</div>
+                </div>
+                ` : ''}
+                
+                <div style="margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #ddd;">
+                    <button class="action-btn reprint-btn" onclick="reprintTicket('${sale.id}')" style="width: 100%; justify-content: center;">
+                        <i class="fas fa-print"></i> Reimprimir Ticket
+                    </button>
+                </div>
+            `;
+        }
+
+        // ========== LIMPIAR FILTROS ==========
+        function clearFilters() {
+            // Resetear filtros básicos
+            document.getElementById('dateFrom').value = getDateString(-7);
+            document.getElementById('dateTo').value = getDateString(0);
+            document.getElementById('userFilter').value = '';
+            document.getElementById('paymentFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('searchSales').value = '';
+            
+            // Resetear filtros avanzados
+            currentFilters = {};
+            
+            updateSalesUI();
+            showNotification('Filtros limpiados', 'info');
+        }
+
+        // ========== ABRIR MODAL DE FILTROS AVANZADOS ==========
+        function openFilterModal() {
+            document.getElementById('filterModal').style.display = 'flex';
+        }
+
+        // ========== CERRAR MODAL DE FILTROS AVANZADOS ==========
+        function closeFilterModal() {
+            document.getElementById('filterModal').style.display = 'none';
+        }
+
+        // ========== APLICAR FILTROS AVANZADOS ==========
+        function applyAdvancedFilters(e) {
+            e.preventDefault();
+            
+            currentFilters = {
+                minAmount: parseFloat(document.getElementById('minAmount').value) || null,
+                maxAmount: parseFloat(document.getElementById('maxAmount').value) || null,
+                productCount: document.getElementById('productCountFilter').value,
+                sortBy: document.getElementById('sortByFilter').value
+            };
+            
+            // Aplicar período de tiempo
+            const timePeriod = document.getElementById('timePeriodFilter').value;
+            const today = new Date();
+            
+            switch(timePeriod) {
+                case 'today':
+                    document.getElementById('dateFrom').value = getDateString(0);
+                    document.getElementById('dateTo').value = getDateString(0);
+                    break;
+                case 'yesterday':
+                    document.getElementById('dateFrom').value = getDateString(-1);
+                    document.getElementById('dateTo').value = getDateString(-1);
+                    break;
+                case 'thisWeek':
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - today.getDay());
+                    document.getElementById('dateFrom').value = formatDateForInput(startOfWeek);
+                    document.getElementById('dateTo').value = getDateString(0);
+                    break;
+                case 'lastWeek':
+                    const lastWeekStart = new Date(today);
+                    lastWeekStart.setDate(today.getDate() - today.getDay() - 7);
+                    const lastWeekEnd = new Date(lastWeekStart);
+                    lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
+                    document.getElementById('dateFrom').value = formatDateForInput(lastWeekStart);
+                    document.getElementById('dateTo').value = formatDateForInput(lastWeekEnd);
+                    break;
+                case 'thisMonth':
+                    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                    document.getElementById('dateFrom').value = formatDateForInput(startOfMonth);
+                    document.getElementById('dateTo').value = getDateString(0);
+                    break;
+                case 'lastMonth':
+                    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                    document.getElementById('dateFrom').value = formatDateForInput(lastMonth);
+                    document.getElementById('dateTo').value = formatDateForInput(endOfLastMonth);
+                    break;
+                // 'custom' no cambia las fechas
+            }
+            
+            closeFilterModal();
+            updateSalesUI();
+            showNotification('Filtros avanzados aplicados', 'success');
+        }
+
+        // ========== MOSTRAR VENTAS DE HOY ==========
+        function showTodaySales() {
+            const today = getDateString(0);
+            document.getElementById('dateFrom').value = today;
+            document.getElementById('dateTo').value = today;
+            updateSalesUI();
+            showNotification('Mostrando ventas de hoy', 'info');
+        }
+
+        // ========== REIMPRIMIR TICKET ==========
+        function reprintTicket(saleId) {
+            const sale = salesHistory.find(s => s.id === saleId);
+            if (!sale) return;
+            
+            // Simular impresión
+            showNotification(`Reimprimiendo ticket ${saleId}...`, 'info');
+            
+            setTimeout(() => {
+                // En una implementación real, esto enviaría a la impresora térmica
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>Ticket ${saleId}</title>
+                        <style>
+                            body { font-family: monospace; font-size: 12px; }
+                            .header { text-align: center; }
+                            .divider { border-top: 1px dashed #000; margin: 10px 0; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h3>Ferretería San José</h3>
+                            <p>Ticket: ${saleId}</p>
+                            <p>Fecha: ${formatDate(sale.date)} ${sale.time}</p>
+                        </div>
+                        <div class="divider"></div>
+                        ${sale.products.map(p => `
+                            <div style="margin-bottom: 5px;">
+                                ${p.qty} x ${p.name}<br>
+                                $${p.price.toFixed(2)} c/u = $${p.total.toFixed(2)}
+                            </div>
+                        `).join('')}
+                        <div class="divider"></div>
+                        <div style="text-align: right;">
+                            <p>Total: $${sale.total.toFixed(2)}</p>
+                            <p>Pago: ${sale.payment}</p>
+                            <p>Vendedor: ${sale.seller}</p>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.print();
+                
+                showNotification(`Ticket ${saleId} enviado a impresión`, 'success');
+            }, 500);
+        }
+
+        // ========== CANCELAR VENTA ==========
+        function cancelSale(saleId) {
+            const sale = salesHistory.find(s => s.id === saleId);
+            if (!sale) return;
+            
+            if (sale.status === 'Cancelada') {
+                showNotification('Esta venta ya está cancelada', 'warning');
+                return;
+            }
+            
+            const password = prompt('Para cancelar esta venta, ingresa la contraseña de Super Administrador:');
+            if (password === 'admin123') { // Contraseña de ejemplo
+                sale.status = 'Cancelada';
+                saveSalesHistory();
+                updateSalesUI();
+                
+                if (selectedSale && selectedSale.id === saleId) {
+                    showSaleDetails(saleId);
+                }
+                
+                showNotification(`Venta ${saleId} cancelada correctamente`, 'warning');
+            } else {
+                showNotification('Contraseña incorrecta', 'error');
+            }
+        }
+
+        // ========== EXPORTAR TODAS LAS VENTAS ==========
+        function exportAllSales() {
+            showNotification('Exportando historial de ventas...', 'info');
+            
+            setTimeout(() => {
+                const csvContent = "ID,Fecha,Hora,Cliente,Vendedor,Productos,Total,Pago,Estado\n" +
+                    salesHistory.map(s => 
+                        `${s.id},${s.date},${s.time},${s.customer},${s.seller},${s.items},${s.total},${s.payment},${s.status}`
+                    ).join("\n");
+                
+                // Crear blob y descargar
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `historial_ventas_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                showNotification('Historial exportado correctamente', 'success');
+            }, 500);
+        }
+
+        // ========== IMPRIMIR REPORTE ==========
+        function printReport() {
+            showNotification('Generando reporte para impresión...', 'info');
+            
+            setTimeout(() => {
+                const filteredCount = document.getElementById('totalSalesCount').textContent;
+                const filteredAmount = document.getElementById('totalSalesAmount').textContent;
+                const dateFrom = document.getElementById('dateFrom').value;
+                const dateTo = document.getElementById('dateTo').value;
+                
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>Reporte de Ventas</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; font-size: 14px; }
+                            .header { text-align: center; margin-bottom: 20px; }
+                            .info { margin-bottom: 15px; }
+                            .divider { border-top: 2px solid #000; margin: 20px 0; }
+                            table { width: 100%; border-collapse: collapse; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #f2f2f2; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Ferretería San José</h1>
+                            <h2>Reporte de Ventas</h2>
+                            <p>Período: ${formatDate(dateFrom)} - ${formatDate(dateTo)}</p>
+                        </div>
+                        <div class="info">
+                            <p><strong>Total Ventas:</strong> ${filteredCount}</p>
+                            <p><strong>Monto Total:</strong> ${filteredAmount}</p>
+                            <p><strong>Fecha de generación:</strong> ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
+                        </div>
+                        <div class="divider"></div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Venta</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Vendedor</th>
+                                    <th>Productos</th>
+                                    <th>Total</th>
+                                    <th>Pago</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${document.querySelectorAll('#salesTableBody tr').length > 0 ? 
+                                    Array.from(document.querySelectorAll('#salesTableBody tr')).map(row => {
+                                        const cells = row.querySelectorAll('td');
+                                        if (cells.length >= 8) {
+                                            return `<tr>
+                                                <td>${cells[0].textContent}</td>
+                                                <td>${cells[1].textContent}</td>
+                                                <td>${cells[3].querySelector('div').textContent}</td>
+                                                <td>${cells[7].textContent}</td>
+                                                <td>${cells[4].textContent}</td>
+                                                <td>${cells[5].textContent}</td>
+                                                <td>${cells[6].querySelector('span').textContent}</td>
+                                                <td>${cells[8].querySelector('span').textContent}</td>
+                                            </tr>`;
+                                        }
+                                        return '';
+                                    }).join('') : 
+                                    '<tr><td colspan="8" style="text-align: center;">No hay ventas en este período</td></tr>'
+                                }
+                            </tbody>
+                        </table>
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.print();
+                
+                showNotification('Reporte listo para imprimir', 'success');
+            }, 1000);
+        }
+
+        // ========== MOSTRAR RESUMEN DIARIO ==========
+        function showDailySummary() {
+            const todaySales = salesHistory.filter(s => s.date === getDateString(0) && s.status === 'Completada');
+            const totalToday = todaySales.reduce((sum, sale) => sum + sale.total, 0);
+            
+            alert(`RESUMEN DE VENTAS - HOY (${formatDate(getDateString(0))})\n\n` +
+                  `📊 Total de ventas: ${todaySales.length}\n` +
+                  `💰 Monto total: $${totalToday.toFixed(2)}\n` +
+                  `👥 Vendedores activos: ${[...new Set(todaySales.map(s => s.seller))].join(', ') || 'Ninguno'}\n\n` +
+                  `📈 Ventas por vendedor:\n` +
+                  todaySales.reduce((acc, sale) => {
+                      acc[sale.seller] = (acc[sale.seller] || 0) + sale.total;
+                      return acc;
+                  }, {})
+                  );
+        }
+
+        // ========== MOSTRAR PRODUCTOS MÁS VENDIDOS ==========
+        function showTopProducts() {
+            const productSales = {};
+            
+            salesHistory.forEach(sale => {
+                if (sale.status === 'Completada') {
+                    sale.products.forEach(product => {
+                        if (!productSales[product.name]) {
+                            productSales[product.name] = {
+                                name: product.name,
+                                qty: 0,
+                                total: 0
+                            };
+                        }
+                        productSales[product.name].qty += product.qty;
+                        productSales[product.name].total += product.total;
+                    });
+                }
+            });
+            
+            const topProducts = Object.values(productSales)
+                .sort((a, b) => b.qty - a.qty)
+                .slice(0, 10);
+            
+            let message = '🏆 TOP 10 PRODUCTOS MÁS VENDIDOS 🏆\n\n';
+            topProducts.forEach((product, index) => {
+                message += `${index + 1}. ${product.name}\n`;
+                message += `   Cantidad: ${product.qty} | Total: $${product.total.toFixed(2)}\n\n`;
+            });
+            
+            alert(message);
+        }
+
+        // ========== MOSTRAR REPORTE POR EMPLEADO ==========
+        function showEmployeeReport() {
+            const employeeSales = {};
+            
+            salesHistory.forEach(sale => {
+                if (sale.status === 'Completada') {
+                    if (!employeeSales[sale.seller]) {
+                        employeeSales[sale.seller] = {
+                            sales: 0,
+                            amount: 0,
+                            items: 0
+                        };
+                    }
+                    employeeSales[sale.seller].sales++;
+                    employeeSales[sale.seller].amount += sale.total;
+                    employeeSales[sale.seller].items += sale.items;
+                }
+            });
+            
+            let message = '📊 REPORTE POR EMPLEADO 📊\n\n';
+            Object.entries(employeeSales).forEach(([employee, data]) => {
+                const avgSale = data.sales > 0 ? data.amount / data.sales : 0;
+                message += `👤 ${employee}:\n`;
+                message += `   Ventas: ${data.sales}\n`;
+                message += `   Productos vendidos: ${data.items}\n`;
+                message += `   Total vendido: $${data.amount.toFixed(2)}\n`;
+                message += `   Promedio por venta: $${avgSale.toFixed(2)}\n\n`;
+            });
+            
+            alert(message);
+        }
+
+        // ========== GENERAR GRÁFICO DE LA SEMANA ==========
+        function generateWeeklyChart() {
+            const chartContainer = document.getElementById('weeklyChart');
+            chartContainer.innerHTML = '';
+            
+            // Obtener ventas de los últimos 7 días
+            const last7Days = Array.from({length: 7}, (_, i) => {
+                const date = new Date();
+                date.setDate(date.getDate() - (6 - i));
+                return date.toISOString().split('T')[0];
+            });
+            
+            // Calcular totales por día
+            const dailyTotals = last7Days.map(date => {
+                return salesHistory
+                    .filter(s => s.date === date && s.status === 'Completada')
+                    .reduce((sum, sale) => sum + sale.total, 0);
+            });
+            
+            // Encontrar máximo para escalar
+            const maxTotal = Math.max(...dailyTotals, 1);
+            
+            // Crear barras
+            last7Days.forEach((date, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                const height = (dailyTotals[index] / maxTotal) * 100;
+                bar.style.height = `${height}%`;
+                bar.style.background = dailyTotals[index] > 0 ? 
+                    `linear-gradient(to top, #3498db, #2980b9)` : 
+                    '#f1f1f1';
+                
+                const label = document.createElement('div');
+                label.className = 'chart-label';
+                label.textContent = `$${dailyTotals[index].toFixed(0)}`;
+                
+                bar.appendChild(label);
+                chartContainer.appendChild(bar);
+            });
+        }
+
+        // ========== FUNCIONES AUXILIARES ==========
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Completada': return 'status-completed';
+                case 'Cancelada': return 'status-cancelled';
+                case 'Pendiente': return 'status-pending';
+                case 'Reembolsada': return 'status-refunded';
+                default: return 'status-completed';
+            }
+        }
+
+        function getPaymentClass(payment) {
+            switch(payment) {
+                case 'Efectivo': return 'payment-cash';
+                case 'Transferencia': return 'payment-transfer';
+                case 'Tarjeta': return 'payment-card';
+                case 'Mixto': return 'payment-mixed';
+                default: return 'payment-cash';
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            return date.toLocaleDateString('es-MX', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function getDateString(daysOffset) {
+            const date = new Date();
+            date.setDate(date.getDate() + daysOffset);
+            return date.toISOString().split('T')[0];
+        }
+
+        function formatDateForInput(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'success' ? '#2ecc71' : 
+                                           type === 'error' ? '#e74c3c' : 
+                                           type === 'warning' ? '#f39c12' : '#3498db';
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

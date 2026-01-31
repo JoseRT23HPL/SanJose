@@ -1,4 +1,5 @@
-
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -79,7 +80,7 @@
 
         /* Menú desplegable ultra compacto */
         .dropdown-menu {
-            min-width: 150px;
+            min-width: 180px;
             border-radius: 4px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             border: none;
@@ -108,6 +109,42 @@
             font-size: 0.8rem;
         }
 
+        /* Separadores en el menú */
+        .menu-section {
+            padding: 0.2rem 0.8rem 0.1rem;
+            font-size: 0.65rem;
+            color: #7f8c8d;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.2rem;
+            border-top: 1px solid #f1f1f1;
+        }
+
+        .menu-section:first-child {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        /* Indicadores de estado */
+        .menu-badge {
+            font-size: 0.6rem;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            margin-left: auto;
+            font-weight: 600;
+        }
+
+        .badge-new {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .badge-soon {
+            background: #f39c12;
+            color: white;
+        }
+
         /* Botones compactos */
         .btn-sm {
             padding: 0.2rem 0.4rem;
@@ -133,6 +170,16 @@
             background-color: #e74c3c;
             color: white;
         }
+
+        /* Colores específicos para iconos */
+        .text-primary { color: #3498db; }
+        .text-success { color: #2ecc71; }
+        .text-info { color: #17a2b8; }
+        .text-warning { color: #f39c12; }
+        .text-danger { color: #e74c3c; }
+        .text-purple { color: #9b59b6; }
+        .text-orange { color: #e67e22; }
+        .text-teal { color: #1abc9c; }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -161,6 +208,20 @@
                 padding: 0.15rem 0.3rem;
                 font-size: 0.7rem;
             }
+            
+            .dropdown-menu {
+                min-width: 160px;
+            }
+        }
+
+        /* Efecto hover mejorado */
+        .dropdown-item.active {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .dropdown-item.active i {
+            color: white;
         }
     </style>
 </head>
@@ -173,7 +234,7 @@
             </div>
             <div>
                 <div class="logo-text">Ferretería San José</div>
-                <small class="text-muted" style="font-size: 0.65rem;">VENTAS RÁPIDAS</small>
+                <small class="text-muted" style="font-size: 0.65rem;">SISTEMA POS</small>
             </div>
         </div>
         
@@ -184,34 +245,86 @@
                     <i class="fas fa-bars me-1"></i> Menú
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="mainMenu">
-                    <li><small class="dropdown-item text-muted" style="font-size: 0.65rem;">Vistas del Sistema</small></li>
-                    <li><a class="dropdown-item active" href="venta.html">
-                        <i class="fas fa-cash-register text-primary" style="font-size: 0.8rem;"></i>
-                        <span>Punto de Venta</span>
-                    </a></li>
-                    <li><a class="dropdown-item" href="productos.html">
-                        <i class="fas fa-boxes text-success" style="font-size: 0.8rem;"></i>
-                        <span>Productos</span>
-                    </a></li>
-                    <li><a class="dropdown-item" href="inventario.html">
-                        <i class="fas fa-clipboard-list text-info" style="font-size: 0.8rem;"></i>
-                        <span>Inventario</span>
-                    </a></li>
-                    <li><a class="dropdown-item" href="#">
-                        <i class="fas fa-chart-bar text-warning" style="font-size: 0.8rem;"></i>
-                        <span>Reportes</span>
-                    </a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">
-                        <i class="fas fa-cog text-secondary" style="font-size: 0.8rem;"></i>
-                        <span>Configuración</span>
-                    </a></li>
+                    <!-- Sección: VENTAS -->
+                    <li><div class="menu-section">VENTAS</div></li>
+                    <li>
+                        <a class="dropdown-item" href="venta.html">
+                            <i class="fas fa-cash-register text-primary"></i    >
+                            <span>Punto de Venta</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="historial.html">
+                            <i class="fas fa-history text-purple"></i>
+                            <span>Historial de Ventas</span>
+                            <span class="menu-badge badge-soon">Próximo</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="corte_caja.html">
+                            <i class="fas fa-calculator text-orange"></i>
+                            <span>Corte de Caja</span>
+                            <span class="menu-badge badge-soon">Próximo</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Sección: INVENTARIO -->
+                    <li><div class="menu-section">INVENTARIO</div></li>
+                    <li>
+                        <a class="dropdown-item" href="productos.html">
+                            <i class="fas fa-boxes text-success"></i>
+                            <span>Productos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="inventario.html">
+                            <i class="fas fa-clipboard-list text-info"></i>
+                            <span>Inventario</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="entrada_salida.html">
+                            <i class="fas fa-exchange-alt text-teal"></i>
+                            <span>Entrada / Salida</span>
+                            <span class="menu-badge badge-new">Nuevo</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Sección: REPORTES -->
+                    <li><div class="menu-section">REPORTES</div></li>
+                    <li>
+                        <a class="dropdown-item" href="reportes.html">
+                            <i class="fas fa-chart-bar text-warning"></i>
+                            <span>Reportes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="ganancias.html">
+                            <i class="fas fa-chart-line text-success"></i>
+                            <span>Ganancias</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Sección: ADMINISTRACIÓN -->
+                    <li><div class="menu-section">ADMINISTRACIÓN</div></li>
+                    <li>
+                        <a class="dropdown-item" href="configuracion.html">
+                            <i class="fas fa-cog text-secondary"></i>
+                            <span>Configuración</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="usuarios.html">
+                            <i class="fas fa-users text-info"></i>
+                            <span>Usuarios</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
             
             <div class="user-info">
                 <div class="user-name" id="currentUserName">Admin</div>
-                <div class="user-role" id="currentUserRole">Admin</div>
+                <div class="user-role" id="currentUserRole">Super Admin</div>
             </div>
             
             <button id="logoutBtn" class="btn btn-sm btn-outline-danger">
@@ -232,7 +345,10 @@
 
         // Función para logout
         document.getElementById('logoutBtn').addEventListener('click', function() {
-            if (confirm('¿Salir del sistema?')) {
+            if (confirm('¿Estás seguro de salir del sistema?')) {
+                // Limpiar datos de sesión
+                localStorage.removeItem('userSession');
+                // Redirigir al login
                 window.location.href = 'login.html';
             }
         });
@@ -245,15 +361,76 @@
             
             // Encontrar y marcar como activo el item correspondiente
             document.querySelectorAll('.dropdown-item').forEach(item => {
-                if (item.textContent.includes(viewName)) {
+                const text = item.textContent.trim();
+                if (text.includes(viewName) || item.getAttribute('href')?.includes(viewName)) {
                     item.classList.add('active');
                 }
             });
         }
 
-        // Inicializar con usuario por defecto
+        // Función para cargar información del usuario
+        function loadUserInfo() {
+            // Intentar cargar desde localStorage
+            const userSession = localStorage.getItem('userSession');
+            if (userSession) {
+                const user = JSON.parse(userSession);
+                setUserInfo(user.name, user.role);
+            } else {
+                // Usuario por defecto
+                setUserInfo('Administrador', 'Super Admin');
+            }
+        }
+
+        // Función para verificar permisos de usuario
+        function checkUserPermissions() {
+            const userSession = localStorage.getItem('userSession');
+            if (!userSession) return;
+            
+            const user = JSON.parse(userSession);
+            const role = user.role;
+            
+            // Ocultar elementos según el rol
+            if (role !== 'Super Admin') {
+                // Administrador Normal no puede ver algunas opciones
+                const restrictedItems = [
+                    'Usuarios',
+                    'Configuración',
+                    'Reportes',
+                    'Ganancias'
+                ];
+                
+                document.querySelectorAll('.dropdown-item').forEach(item => {
+                    const text = item.textContent.trim();
+                    restrictedItems.forEach(restricted => {
+                        if (text.includes(restricted)) {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }
+
+        // Inicializar cuando el documento esté listo
         document.addEventListener('DOMContentLoaded', function() {
-            setUserInfo('Admin', 'Administrador');
+            loadUserInfo();
+            checkUserPermissions();
+            
+            // Marcar vista activa según la URL actual
+            const currentPage = window.location.pathname.split('/').pop();
+            const pageMap = {
+                'ventas.html': '1️⃣ Punto de Venta',
+                'productos.html': '2️⃣ Productos',
+                'inventario.html': '3️⃣ Inventario',
+                'entrada_salida.html': '4️⃣ Entrada / Salida',
+                'corte_caja.html': '🔜 5️⃣ Corte de Caja',
+                'historial_ventas.html': '🔜 6️⃣ Historial de Ventas',
+                'reportes.html': '7️⃣ Reportes',
+                'ganancias.html': '8️⃣ Ganancias'
+            };
+            
+            if (pageMap[currentPage]) {
+                setActiveView(pageMap[currentPage]);
+            }
         });
     </script>
 </body>
